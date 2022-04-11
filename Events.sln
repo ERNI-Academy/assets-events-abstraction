@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2D2DF22D-D0CE-4606-9E05-C323A911E0D9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E9BEC824-50B2-4246-9250-636486A70721}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{C5B89AC1-B554-400E-AACA-CC33C2A3C789}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".sln", ".sln", "{4DF3D0C1-6269-4FD6-9B23-0D8405676159}"
+	ProjectSection(SolutionItems) = preProject
+		.all-contributorsrc = .all-contributorsrc
+		.gitignore = .gitignore
+		AUTHORS.md = AUTHORS.md
+		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		CONTRIBUTING.md = CONTRIBUTING.md
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Events.Contracts", "src\ErniAcademy.Events.Contracts\ErniAcademy.Events.Contracts.csproj", "{678FC54C-2714-4A4C-926C-A6AF1B9A7F23}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{678FC54C-2714-4A4C-926C-A6AF1B9A7F23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{678FC54C-2714-4A4C-926C-A6AF1B9A7F23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{678FC54C-2714-4A4C-926C-A6AF1B9A7F23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{678FC54C-2714-4A4C-926C-A6AF1B9A7F23}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{678FC54C-2714-4A4C-926C-A6AF1B9A7F23} = {2D2DF22D-D0CE-4606-9E05-C323A911E0D9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A45AECB9-C582-41C2-B1B2-E1F1684488D5}
+	EndGlobalSection
+EndGlobal
