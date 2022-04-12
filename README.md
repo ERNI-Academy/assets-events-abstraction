@@ -1,4 +1,5 @@
-# About {{ Name }}
+# About Events Abstraction
+ Define a contract and many implementations for working with many technologies for publish events
 
 ERNI Academy StarterKit, PoC, or Gidelines. This is an about description of your repository.
 
@@ -9,14 +10,12 @@ ERNI Academy StarterKit, PoC, or Gidelines. This is an about description of your
 
 This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
-- [Tools A](https://example.com)
-- [Framework B](https://example.com)
-- [Project C](https://example.com)
+- [.Net 6.0](https://docs.microsoft.com/en-us/dotnet/core/whats-new/dotnet-6)
+- [c# 11](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-11)
 
 ## Features
 
-- Be awesome
-- Make things faster
+- PublishEvents
 
 ## Getting Started
 
@@ -28,25 +27,19 @@ This is an example of how to list things you need to use the software and how to
 
 ## Installation
 
-Installation instructions {{ Name }} by running:
+Installation instructions Events Abstraction by running:
 
 1. Clone the repo
 
-   ```sh
-   git clone https://github.com/ERNI-Academy/Project-Name.git
-   ```
+```sh
+git clone https://github.com/ERNI-Academy/assets-events-abstraction
+```
 
-2. Install packages
-
-    ```sh
-    npm install
-    ```
-
-3. Configure
-
-    ```JS
-    const API_KEY = 'ENTER YOUR API';
-    ```
+```c#
+ IEventPublisher publisher = new ErniAcademy.Events.XXXX();
+ IEventPublisher publisher = new ErniAcademy.Events.YYYY();
+ IEventPublisher publisher = new ErniAcademy.Events.ZZZZ();
+```
 
 ## Contributing
 

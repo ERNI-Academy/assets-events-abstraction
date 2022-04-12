@@ -10,7 +10,7 @@ public interface IEventPublisher
     /// </summary>
     /// <typeparam name="TEvent"></typeparam>
     /// <param name="event">The event to be publish</param>
-    /// <returns></returns>
+    /// <returns>A task that represents the asynchronous publish operation</returns>
     Task PublishAsync<TEvent>(TEvent @event) 
         where TEvent : class, IEvent, new();
 
@@ -19,7 +19,7 @@ public interface IEventPublisher
     /// </summary>
     /// <typeparam name="TEvent"></typeparam>
     /// <param name="event">The events to be publish</param>
-    /// <returns></returns>
+    /// <returns>A task that represents the asynchronous publish operation</returns>
     Task PublishAsync<TEvent>(TEvent[] @event)
         where TEvent : class, IEvent, new();
 }
