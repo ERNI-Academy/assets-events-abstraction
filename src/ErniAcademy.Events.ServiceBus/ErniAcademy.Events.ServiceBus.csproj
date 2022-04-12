@@ -17,6 +17,12 @@
 	  <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>ErniAcademy.Events.ServiceBus.UnitTests</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ErniAcademy.Events.Contracts\ErniAcademy.Events.Contracts.csproj" />
   </ItemGroup>

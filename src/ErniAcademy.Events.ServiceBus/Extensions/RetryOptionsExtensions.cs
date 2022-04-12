@@ -17,6 +17,6 @@ internal static class RetryOptionsExtensions
             }
         };
 
-        return serviceBusOptions
+        return serviceBusOptions;
     }
 }
