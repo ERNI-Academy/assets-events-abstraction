@@ -11,6 +11,11 @@ public interface IEvent
     Guid EventId { get; set; }
 
     /// <summary>
+    /// Unique identifier for handling CorrelationId
+    /// </summary>
+    Guid CorrelationId { get; set; }
+
+    /// <summary>
     /// Event type
     /// </summary>
     string EventType { get; set; }
