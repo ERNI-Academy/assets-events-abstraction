@@ -22,6 +22,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".sln", ".sln", "{4DF3D0C1-6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Events.Contracts", "src\ErniAcademy.Events.Contracts\ErniAcademy.Events.Contracts.csproj", "{678FC54C-2714-4A4C-926C-A6AF1B9A7F23}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Events.ServiceBus", "src\ErniAcademy.Events.ServiceBus\ErniAcademy.Events.ServiceBus.csproj", "{E905C1CF-9145-4B44-BC7D-12980A96FCDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErniAcademy.Events.ServiceBus.UnitTests", "tests\ErniAcademy.Events.ServiceBus.UnitTests\ErniAcademy.Events.ServiceBus.UnitTests.csproj", "{387B1887-B555-4A9B-8558-75CBAB6919B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,12 +36,22 @@ Global
 		{678FC54C-2714-4A4C-926C-A6AF1B9A7F23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{678FC54C-2714-4A4C-926C-A6AF1B9A7F23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{678FC54C-2714-4A4C-926C-A6AF1B9A7F23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E905C1CF-9145-4B44-BC7D-12980A96FCDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E905C1CF-9145-4B44-BC7D-12980A96FCDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E905C1CF-9145-4B44-BC7D-12980A96FCDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E905C1CF-9145-4B44-BC7D-12980A96FCDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{387B1887-B555-4A9B-8558-75CBAB6919B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{387B1887-B555-4A9B-8558-75CBAB6919B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{387B1887-B555-4A9B-8558-75CBAB6919B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{387B1887-B555-4A9B-8558-75CBAB6919B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{678FC54C-2714-4A4C-926C-A6AF1B9A7F23} = {2D2DF22D-D0CE-4606-9E05-C323A911E0D9}
+		{E905C1CF-9145-4B44-BC7D-12980A96FCDC} = {2D2DF22D-D0CE-4606-9E05-C323A911E0D9}
+		{387B1887-B555-4A9B-8558-75CBAB6919B6} = {E9BEC824-50B2-4246-9250-636486A70721}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A45AECB9-C582-41C2-B1B2-E1F1684488D5}
