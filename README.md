@@ -15,7 +15,7 @@ This section should list any major frameworks that you built your project using.
 
 ## Features
 
-- PublishEvents
+- PublishAsync
 
 ## Getting Started
 
@@ -23,7 +23,8 @@ This is an example of how you may give instructions on setting up your project l
 
 ## Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+.net 6
+Visual Studio or Visual Studio Code
 
 ## Installation
 
@@ -36,9 +37,20 @@ git clone https://github.com/ERNI-Academy/assets-events-abstraction
 ```
 
 ```c#
+class MyEvent : EventBase
+{
+	public string MyCustomProperty { get; set; }
+}
+
+var @event = new MyEvent { MyCustomProperty = "hi" };
+
+ //you can choose between many impl
  IEventPublisher publisher = new ErniAcademy.Events.XXXX();
  IEventPublisher publisher = new ErniAcademy.Events.YYYY();
  IEventPublisher publisher = new ErniAcademy.Events.ZZZZ();
+
+ //just publish your event
+ await publisher.PublishAsync(@event);
 ```
 
 ## Contributing
