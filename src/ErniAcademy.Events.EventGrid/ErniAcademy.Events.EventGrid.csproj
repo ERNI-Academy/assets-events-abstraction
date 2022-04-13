@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<RepositoryUrl>https://github.com/ERNI-Academy/assets-events-abstraction</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<Authors>ErniAcademy</Authors>
+		<Company>Erni</Company>
+		<PackageDescription>Events EventGrid publisher</PackageDescription>
+		<PackageTags>Events EventGrid</PackageTags>
+		<VersionPrefix>1.0.0</VersionPrefix>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Azure.Messaging.EventGrid" Version="4.10.0" />
+	  <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ErniAcademy.Events.Contracts\ErniAcademy.Events.Contracts.csproj" />
+	</ItemGroup>
+
+</Project>
