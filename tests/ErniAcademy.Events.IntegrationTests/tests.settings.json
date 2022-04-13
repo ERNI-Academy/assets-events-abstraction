@@ -7,7 +7,8 @@
       },
       "EventGrid": {
         "Endpoint": "__EventGridConnectionString__",
-        "Key": "__EventGridKey__"
+        "Key": "__EventGridKey__",
+        "ConnectionString": "__EventGridQueueProcessorConnectionString__"
       }
     }
   }
