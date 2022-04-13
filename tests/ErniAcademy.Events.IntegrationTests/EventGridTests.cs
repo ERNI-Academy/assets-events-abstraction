@@ -27,8 +27,8 @@ public class EventGridTests : BaseTests
 
     protected override IServiceCollection RegisterSut(IServiceCollection services)
     {
-        services.AddErniAcademyKeyEventGrid(_serializer);
-        services.ErniAcademyConfigureOptions<QueueOptions>(ServiceCollectionExtensions.SectionKey);
+        services.AddEventGridFromKey(_serializer, sectionKey: "Events:EventGrid");
+        services.ConfigureOptions<QueueOptions>(sectionKey: "Events:EventGrid");
         return services;
     }
 

@@ -26,7 +26,7 @@ public class ServiceBusTests : BaseTests
 
     protected override IServiceCollection RegisterSut(IServiceCollection services)
     {
-        services.AddErniAcademyConnectionStringServiceBus(_serializer);
+        services.AddServiceBusFromConnectionString(_serializer, sectionKey: "Events:ServiceBus");
         return services;
     }
 

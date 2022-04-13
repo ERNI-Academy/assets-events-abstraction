@@ -13,15 +13,13 @@ namespace ErniAcademy.Events.ServiceBus.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public const string SectionKey = "ErniAcademy:Events:ServiceBus";
-
-        public static IServiceCollection AddErniAcademyConnectionStringServiceBus(this IServiceCollection services,
+        public static IServiceCollection AddServiceBusFromConnectionString(this IServiceCollection services,
             ISerializer serializer,
-            ServiceBusClientOptions busOptions = null,
-            string sectionKey = SectionKey)
+            string sectionKey,
+            ServiceBusClientOptions busOptions = null)
         {
             services.AddOptions();
-            services.ErniAcademyConfigureOptions<ConnectionStringOptions>(sectionKey);
+            services.ConfigureOptions<ConnectionStringOptions>(sectionKey);
 
             services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
@@ -38,14 +36,14 @@ namespace ErniAcademy.Events.ServiceBus.Extensions
             return services;
         }
 
-        public static IServiceCollection AddErniAcademyTokenCredentialServiceBus(this IServiceCollection services,
+        public static IServiceCollection AdderviceBusFromTokenCredential(this IServiceCollection services,
             TokenCredential tokenCredential,
             ISerializer serializer,
-            ServiceBusClientOptions busOptions = null,
-            string sectionKey = SectionKey)
+            string sectionKey,
+            ServiceBusClientOptions busOptions = null)
         {
             services.AddOptions();
-            services.ErniAcademyConfigureOptions<FullyQualifiedNamespaceOptions>(sectionKey);
+            services.ConfigureOptions<FullyQualifiedNamespaceOptions>(sectionKey);
 
             services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
@@ -63,7 +61,7 @@ namespace ErniAcademy.Events.ServiceBus.Extensions
             return services;
         }
 
-        internal static IServiceCollection ErniAcademyConfigureOptions<TOptions>(this IServiceCollection services, string sectionKey = SectionKey)
+        internal static IServiceCollection ConfigureOptions<TOptions>(this IServiceCollection services, string sectionKey)
              where TOptions : class, new()
         {
             services.AddSingleton((Func<IServiceProvider, IConfigureOptions<TOptions>>)(p =>
