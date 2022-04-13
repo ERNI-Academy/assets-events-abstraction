@@ -35,13 +35,13 @@ public class EventGridPublisher : IEventPublisher
         var messages = new EventGridEvent[events.Length];
         for (int i = 0; i < events.Length; i++)
         {
-            messages[i] = await BuildMessage(events[i]);
+            messages[i] = await BuildEvent(events[i]);
         }
 
         await _client.SendEventsAsync(messages, cancellationToken);
     }
 
-    internal async Task<EventGridEvent> BuildMessage<TEvent>(TEvent @event) 
+    internal async Task<EventGridEvent> BuildEvent<TEvent>(TEvent @event) 
         where TEvent : class, IEvent, new()
     {
         await using var stream = new MemoryStream();

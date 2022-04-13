@@ -26,7 +26,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Events.ServiceB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Events.ServiceBus.UnitTests", "tests\ErniAcademy.Events.ServiceBus.UnitTests\ErniAcademy.Events.ServiceBus.UnitTests.csproj", "{387B1887-B555-4A9B-8558-75CBAB6919B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErniAcademy.Events.EventGrid", "src\ErniAcademy.Events.EventGrid\ErniAcademy.Events.EventGrid.csproj", "{269F60FD-041C-4BDF-9AAC-DBA4670ACBC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Events.EventGrid", "src\ErniAcademy.Events.EventGrid\ErniAcademy.Events.EventGrid.csproj", "{269F60FD-041C-4BDF-9AAC-DBA4670ACBC2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErniAcademy.Events.EventGrid.UnitTests", "tests\ErniAcademy.Events.EventGrid.UnitTests\ErniAcademy.Events.EventGrid.UnitTests.csproj", "{79083101-D4B3-4F73-94BA-9B4ED77A9A9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +52,10 @@ Global
 		{269F60FD-041C-4BDF-9AAC-DBA4670ACBC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{269F60FD-041C-4BDF-9AAC-DBA4670ACBC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{269F60FD-041C-4BDF-9AAC-DBA4670ACBC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79083101-D4B3-4F73-94BA-9B4ED77A9A9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79083101-D4B3-4F73-94BA-9B4ED77A9A9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79083101-D4B3-4F73-94BA-9B4ED77A9A9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79083101-D4B3-4F73-94BA-9B4ED77A9A9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +65,7 @@ Global
 		{E905C1CF-9145-4B44-BC7D-12980A96FCDC} = {2D2DF22D-D0CE-4606-9E05-C323A911E0D9}
 		{387B1887-B555-4A9B-8558-75CBAB6919B6} = {E9BEC824-50B2-4246-9250-636486A70721}
 		{269F60FD-041C-4BDF-9AAC-DBA4670ACBC2} = {2D2DF22D-D0CE-4606-9E05-C323A911E0D9}
+		{79083101-D4B3-4F73-94BA-9B4ED77A9A9D} = {E9BEC824-50B2-4246-9250-636486A70721}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A45AECB9-C582-41C2-B1B2-E1F1684488D5}
