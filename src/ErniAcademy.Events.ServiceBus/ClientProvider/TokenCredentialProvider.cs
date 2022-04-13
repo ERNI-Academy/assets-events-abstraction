@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Azure.Messaging.ServiceBus;
 using ErniAcademy.Events.ServiceBus.Configuration;
+using ErniAcademy.Events.ServiceBus.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace ErniAcademy.Events.ServiceBus.ClientProvider;
@@ -33,6 +34,7 @@ public class TokenCredentialProvider : IServiceBusClientProvider
     public ServiceBusClient GetClient()
     {
         var options = _options.CurrentValue;
-        return new ServiceBusClient(options.FullyQualifiedNamespace, _tokenCredential);
+        var retryOptions = _retryOptions.CurrentValue.ToServiceBusClientOptions();
+        return new ServiceBusClient(options.FullyQualifiedNamespace, _tokenCredential, retryOptions);
     }
 }
