@@ -21,7 +21,7 @@ namespace ErniAcademy.Events.ServiceBus.Extensions
             string sectionKey = SectionKey)
         {
             services.AddOptions();
-            services.ConfigureOptions<ConnectionStringOptions>(sectionKey);
+            services.ErniAcademyConfigureOptions<ConnectionStringOptions>(sectionKey);
 
             services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
@@ -45,7 +45,7 @@ namespace ErniAcademy.Events.ServiceBus.Extensions
             string sectionKey = SectionKey)
         {
             services.AddOptions();
-            services.ConfigureOptions<FullyQualifiedNamespaceOptions>(sectionKey);
+            services.ErniAcademyConfigureOptions<FullyQualifiedNamespaceOptions>(sectionKey);
 
             services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
@@ -63,7 +63,7 @@ namespace ErniAcademy.Events.ServiceBus.Extensions
             return services;
         }
 
-        internal static IServiceCollection ConfigureOptions<TOptions>(this IServiceCollection services, string sectionKey = SectionKey)
+        internal static IServiceCollection ErniAcademyConfigureOptions<TOptions>(this IServiceCollection services, string sectionKey = SectionKey)
              where TOptions : class, new()
         {
             services.AddSingleton((Func<IServiceProvider, IConfigureOptions<TOptions>>)(p =>

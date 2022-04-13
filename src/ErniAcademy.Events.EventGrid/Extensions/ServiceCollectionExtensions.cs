@@ -8,79 +8,78 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
-namespace ErniAcademy.Events.EventGrid.Extensions
+namespace ErniAcademy.Events.EventGrid.Extensions;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    public const string SectionKey = "ErniAcademy:Events:EventGrid";
+
+    public static IServiceCollection AddErniAcademyKeyEventGrid(this IServiceCollection services,
+        ISerializer serializer,
+        string sectionKey = SectionKey)
     {
-        public const string SectionKey = "ErniAcademy:Events:EventGrid";
+        services.AddOptions();
+        services.ErniAcademyConfigureOptions<TopicOptions>(sectionKey);
+        services.ErniAcademyConfigureOptions<KeyOptions>(sectionKey);
+        services.ErniAcademyConfigureOptions<PublisherOptions>(sectionKey);
 
-        public static IServiceCollection AddErniAcademyKeyEventGrid(this IServiceCollection services,
-            ISerializer serializer,
-            string sectionKey = SectionKey)
+        services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+
+        services.TryAddSingleton<IEventPublisher>(provider =>
         {
-            services.AddOptions();
-            services.ConfigureOptions<TopicOptions>(sectionKey);
-            services.ConfigureOptions<KeyOptions>(sectionKey);
-            services.ConfigureOptions<PublisherOptions>(sectionKey);
+            var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
+            var eventGridPublisherClientProvider = new KeyCredentialProvider(
+                provider.GetRequiredService<IOptionsMonitor<TopicOptions>>(),
+                provider.GetRequiredService<IOptionsMonitor<KeyOptions>>());
 
-            services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+            var options = provider.GetRequiredService<IOptionsMonitor<PublisherOptions>>();
 
-            services.TryAddSingleton<IEventPublisher>(provider =>
-            {
-                var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
-                var eventGridPublisherClientProvider = new KeyCredentialProvider(
-                    provider.GetRequiredService<IOptionsMonitor<TopicOptions>>(),
-                    provider.GetRequiredService<IOptionsMonitor<KeyOptions>>());
+            return new EventGridPublisher(eventGridPublisherClientProvider, eventNameResolver, serializer, options);
+        });
 
-                var options = provider.GetRequiredService<IOptionsMonitor<PublisherOptions>>();
+        return services;
+    }
 
-                return new EventGridPublisher(eventGridPublisherClientProvider, eventNameResolver, serializer, options);
-            });
+    public static IServiceCollection AddErniAcademyTokenCredentialEventGrid(this IServiceCollection services,
+        TokenCredential tokenCredential,
+        ISerializer serializer, 
+        string sectionKey = SectionKey)
+    {
+        services.AddOptions();
+        services.ErniAcademyConfigureOptions<TopicOptions>(sectionKey);
+        services.ErniAcademyConfigureOptions<PublisherOptions>(sectionKey);
 
-            return services;
-        }
+        services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
-        public static IServiceCollection AddErniAcademyTokenCredentialEventGrid(this IServiceCollection services,
-            TokenCredential tokenCredential,
-            ISerializer serializer, 
-            string sectionKey = SectionKey)
+        services.TryAddSingleton<IEventPublisher>(provider =>
         {
-            services.AddOptions();
-            services.ConfigureOptions<TopicOptions>(sectionKey);
-            services.ConfigureOptions<PublisherOptions>(sectionKey);
+            var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
+            var serviceBusClientProvider = new TokenCredentialProvider(
+                provider.GetRequiredService<IOptionsMonitor<TopicOptions>>(),
+                tokenCredential);
 
-            services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+            var options = provider.GetRequiredService<IOptionsMonitor<PublisherOptions>>();
 
-            services.TryAddSingleton<IEventPublisher>(provider =>
-            {
-                var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
-                var serviceBusClientProvider = new TokenCredentialProvider(
-                    provider.GetRequiredService<IOptionsMonitor<TopicOptions>>(),
-                    tokenCredential);
+            return new EventGridPublisher(serviceBusClientProvider, eventNameResolver, serializer, options);
+        });
 
-                var options = provider.GetRequiredService<IOptionsMonitor<PublisherOptions>>();
+        return services;
+    }
 
-                return new EventGridPublisher(serviceBusClientProvider, eventNameResolver, serializer, options);
-            });
-
-            return services;
-        }
-
-        internal static IServiceCollection ConfigureOptions<TOptions>(this IServiceCollection services, string sectionKey = SectionKey)
-             where TOptions : class, new()
+    internal static IServiceCollection ErniAcademyConfigureOptions<TOptions>(this IServiceCollection services, string sectionKey = SectionKey)
+         where TOptions : class, new()
+    {
+        services.AddSingleton((Func<IServiceProvider, IConfigureOptions<TOptions>>)(p =>
         {
-            services.AddSingleton((Func<IServiceProvider, IConfigureOptions<TOptions>>)(p =>
-            {
-                var configuration = p.GetRequiredService<IConfiguration>();
-                var options = new ConfigureFromConfigurationOptions<TOptions>(configuration.GetSection(sectionKey));
+            var configuration = p.GetRequiredService<IConfiguration>();
+            var options = new ConfigureFromConfigurationOptions<TOptions>(configuration.GetSection(sectionKey));
 
-                var settings = new TOptions();
-                options.Action(settings);
+            var settings = new TOptions();
+            options.Action(settings);
 
-                return options;
-            }));
+            return options;
+        }));
 
-            return services;
-        }
+        return services;
     }
 }
