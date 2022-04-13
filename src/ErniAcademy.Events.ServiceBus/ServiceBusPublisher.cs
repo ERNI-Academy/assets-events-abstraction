@@ -19,9 +19,10 @@ public class ServiceBusPublisher : IEventPublisher
         ISerializer serializer)
     {
         _client = serviceBusClientProvider.GetClient();
-        _senders = new ConcurrentDictionary<string, ServiceBusSender>();
         _eventNameResolver = eventNameResolver;
         _serializer = serializer;
+
+        _senders = new ConcurrentDictionary<string, ServiceBusSender>();
     }
 
     public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
