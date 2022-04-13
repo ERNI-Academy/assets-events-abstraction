@@ -1,50 +1,53 @@
 ﻿using Azure.Core;
 using ErniAcademy.Events.Contracts;
-using ErniAcademy.Events.ServiceBus.ClientProvider;
-using ErniAcademy.Events.ServiceBus.Configuration;
-using ErniAcademy.Events.ServiceBus.Serializers;
+using ErniAcademy.Events.EventGrid.ClientProvider;
+using ErniAcademy.Events.EventGrid.Configuration;
+using ErniAcademy.Events.EventGrid.Serializers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
-namespace ErniAcademy.Events.ServiceBus.Extensions
+namespace ErniAcademy.Events.EventGrid.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public const string SectionKey = "ErniAcademy:Events:ServiceBus";
+        public const string SectionKey = "ErniAcademy:Events:EventGrid";
 
-        public static IServiceCollection AddErniAcademyConnectionStringServiceBus(this IServiceCollection services,
+        public static IServiceCollection AddErniAcademyKeyEventGrid(this IServiceCollection services,
             ISerializer serializer,
             string sectionKey = SectionKey)
         {
             services.AddOptions();
-            services.ConfigureOptions<ConnectionStringOptions>(sectionKey);
-            services.ConfigureOptions<Configuration.RetryOptions>(sectionKey);
+            services.ConfigureOptions<TopicOptions>(sectionKey);
+            services.ConfigureOptions<KeyOptions>(sectionKey);
+            services.ConfigureOptions<PublisherOptions>(sectionKey);
 
             services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
             services.TryAddSingleton<IEventPublisher>(provider =>
             {
                 var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
-                var serviceBusClientProvider = new ConnectionStringProvider(
-                    provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(),
-                    provider.GetRequiredService<IOptionsMonitor<Configuration.RetryOptions>>());
+                var eventGridPublisherClientProvider = new KeyCredentialProvider(
+                    provider.GetRequiredService<IOptionsMonitor<TopicOptions>>(),
+                    provider.GetRequiredService<IOptionsMonitor<KeyOptions>>());
 
-                return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
+                var options = provider.GetRequiredService<IOptionsMonitor<PublisherOptions>>();
+
+                return new EventGridPublisher(eventGridPublisherClientProvider, eventNameResolver, serializer, options);
             });
 
             return services;
         }
 
-        public static IServiceCollection AddErniAcademyTokenCredentialServiceBus(this IServiceCollection services,
+        public static IServiceCollection AddErniAcademyTokenCredentialEventGrid(this IServiceCollection services,
             TokenCredential tokenCredential,
-            ISerializer serializer,
+            ISerializer serializer, 
             string sectionKey = SectionKey)
         {
             services.AddOptions();
-            services.ConfigureOptions<FullyQualifiedNamespaceOptions>(sectionKey);
-            services.ConfigureOptions<Configuration.RetryOptions>(sectionKey);
+            services.ConfigureOptions<TopicOptions>(sectionKey);
+            services.ConfigureOptions<PublisherOptions>(sectionKey);
 
             services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
@@ -52,11 +55,12 @@ namespace ErniAcademy.Events.ServiceBus.Extensions
             {
                 var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
                 var serviceBusClientProvider = new TokenCredentialProvider(
-                    provider.GetRequiredService<IOptionsMonitor<FullyQualifiedNamespaceOptions>>(),
-                    tokenCredential,
-                    provider.GetRequiredService<IOptionsMonitor<Configuration.RetryOptions>>());
+                    provider.GetRequiredService<IOptionsMonitor<TopicOptions>>(),
+                    tokenCredential);
 
-                return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
+                var options = provider.GetRequiredService<IOptionsMonitor<PublisherOptions>>();
+
+                return new EventGridPublisher(serviceBusClientProvider, eventNameResolver, serializer, options);
             });
 
             return services;
