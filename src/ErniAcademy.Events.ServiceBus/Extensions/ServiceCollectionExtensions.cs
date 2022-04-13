@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using Azure.Messaging.ServiceBus;
 using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.ServiceBus.ClientProvider;
 using ErniAcademy.Events.ServiceBus.Configuration;
@@ -16,11 +17,11 @@ namespace ErniAcademy.Events.ServiceBus.Extensions
 
         public static IServiceCollection AddErniAcademyConnectionStringServiceBus(this IServiceCollection services,
             ISerializer serializer,
+            ServiceBusClientOptions busOptions = null,
             string sectionKey = SectionKey)
         {
             services.AddOptions();
             services.ConfigureOptions<ConnectionStringOptions>(sectionKey);
-            services.ConfigureOptions<Configuration.RetryOptions>(sectionKey);
 
             services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
@@ -29,7 +30,7 @@ namespace ErniAcademy.Events.ServiceBus.Extensions
                 var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
                 var serviceBusClientProvider = new ConnectionStringProvider(
                     provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(),
-                    provider.GetRequiredService<IOptionsMonitor<Configuration.RetryOptions>>());
+                    busOptions);
 
                 return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
             });
@@ -40,11 +41,11 @@ namespace ErniAcademy.Events.ServiceBus.Extensions
         public static IServiceCollection AddErniAcademyTokenCredentialServiceBus(this IServiceCollection services,
             TokenCredential tokenCredential,
             ISerializer serializer,
+            ServiceBusClientOptions busOptions = null,
             string sectionKey = SectionKey)
         {
             services.AddOptions();
             services.ConfigureOptions<FullyQualifiedNamespaceOptions>(sectionKey);
-            services.ConfigureOptions<Configuration.RetryOptions>(sectionKey);
 
             services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
@@ -54,7 +55,7 @@ namespace ErniAcademy.Events.ServiceBus.Extensions
                 var serviceBusClientProvider = new TokenCredentialProvider(
                     provider.GetRequiredService<IOptionsMonitor<FullyQualifiedNamespaceOptions>>(),
                     tokenCredential,
-                    provider.GetRequiredService<IOptionsMonitor<Configuration.RetryOptions>>());
+                    busOptions);
 
                 return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
             });
