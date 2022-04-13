@@ -34,6 +34,8 @@ public class EventGridTests : BaseTests
 
     protected override async Task<DummyEvent> WaitForReceive()
     {
+        await Task.Delay(TimeSpan.FromSeconds(5));
+
         var message = (await _processor.ReceiveMessageAsync( TimeSpan.FromSeconds(5))).Value;
 
         await _processor.DeleteMessageAsync(message.MessageId, message.PopReceipt);

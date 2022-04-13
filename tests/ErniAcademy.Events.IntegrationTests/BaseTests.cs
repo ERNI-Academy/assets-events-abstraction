@@ -48,7 +48,7 @@ namespace ErniAcademy.Events.IntegrationTests
             //Arrange
             var @event = new DummyEvent
             {
-                Title = "Integration test event" + Guid.NewGuid()
+                Title = "Integration test event " + Guid.NewGuid()
             };
 
             //Act
