@@ -1,0 +1,14 @@
+{
+  "Environment": "__IsAtBuiltTime__",
+  "ErniAcademy": {
+    "Events": {
+      "ServiceBus": {
+        "ConnectionString": "__ServiceBusConnectionString__"
+      },
+      "EventGrid": {
+        "Endpoint": "__EventGridConnectionString__",
+        "Key": "__EventGridKey__"
+      }
+    }
+  }
+}
