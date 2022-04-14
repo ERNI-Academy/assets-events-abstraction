@@ -11,18 +11,18 @@ namespace ErniAcademy.Events.ServiceBus.ClientProvider;
 public class ConnectionStringProvider : IServiceBusClientProvider
 {
     private readonly IOptionsMonitor<ConnectionStringOptions> _options;
-    private readonly IOptionsMonitor<RetryOptions> _retryOptions;
+    private readonly ServiceBusClientOptions _busOptions;
 
-    // <summary>
+    /// <summary>
     /// Initializes a new instance of the TokenCredentialProvider class.
     /// </summary>
     /// <param name="options">IOptionsMonitor of ConnectionStringOptions settings</param>
-    /// <param name="retryOptions">IOptionsMonitor of RetryOptions settings</param>
-    public ConnectionStringProvider(IOptionsMonitor<ConnectionStringOptions> options, IOptionsMonitor<RetryOptions> retryOptions)
+    /// <param name="busOptions">The set of Azure.Messaging.ServiceBus.ServiceBusClientOptions to use for configuring the Azure.Messaging.ServiceBus.ServiceBusClient.</param>
+    public ConnectionStringProvider(IOptionsMonitor<ConnectionStringOptions> options, ServiceBusClientOptions busOptions = null)
     {
         _options = options;
-        _retryOptions = retryOptions;
+        _busOptions = busOptions;
     }
 
-    public ServiceBusClient GetClient() => new ServiceBusClient(_options.CurrentValue.ConnectionString, _retryOptions.CurrentValue.ToServiceBusClientOptions());
+    public ServiceBusClient GetClient() => new ServiceBusClient(_options.CurrentValue.ConnectionString, _busOptions);
 }

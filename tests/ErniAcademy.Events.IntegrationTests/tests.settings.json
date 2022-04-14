@@ -1,0 +1,13 @@
+{
+  "Environment": "__IsAtBuiltTime__",
+  "Events": {
+    "ServiceBus": {
+      "ConnectionString": "__ServiceBusConnectionString__"
+    },
+    "EventGrid": {
+      "Endpoint": "__EventGridConnectionString__",
+      "Key": "__EventGridKey__",
+      "ConnectionString": "__EventGridQueueProcessorConnectionString__"
+    }
+  }
+}

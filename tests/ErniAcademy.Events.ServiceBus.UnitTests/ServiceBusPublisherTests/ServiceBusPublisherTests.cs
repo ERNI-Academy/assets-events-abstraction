@@ -42,7 +42,7 @@ public class BuildMessage
         //Assert
         actual.ContentType.Should().Be("application/test");
         actual.Body.Should().NotBeNull();
-        actual.ApplicationProperties.Should().NotBeNullOrEmpty().And.ContainSingle(x=>x.Key == "key1" && x.Value == "value1");
+        actual.ApplicationProperties.Should().NotBeNullOrEmpty().And.ContainSingle(x=>x.Key == "key1" && x.Value.ToString() == "value1");
     }
 
     private class DummyEvent : EventBase
