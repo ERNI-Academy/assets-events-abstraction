@@ -41,4 +41,5 @@ jobs:
             dotnet build ./Events.sln --configuration Release
             dotnet test "tests/ErniAcademy.Events.EventGrid.UnitTests/ErniAcademy.Events.EventGrid.UnitTests.csproj" --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
             dotnet test "tests/ErniAcademy.Events.ServiceBus.UnitTests/ErniAcademy.Events.ServiceBus.UnitTests.csproj" --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+            dotnet test "tests/ErniAcademy.Events.Contracts.UnitTests/ErniAcademy.Events.Contracts.UnitTests.csproj" --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
             dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
