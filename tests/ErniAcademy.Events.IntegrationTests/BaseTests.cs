@@ -21,10 +21,10 @@ namespace ErniAcademy.Events.IntegrationTests
 
             var tempConfig = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("tests.settings.json", optional: false)
+                .AddJsonFile("tests.settings.Development.json", optional: true)
                 .Build();
 
-            var isDevelopment = tempConfig.GetValue<string>("Environment") == "__IsAtBuiltTime__";
+            var isDevelopment = tempConfig.GetValue<string>("Environment") == "Development";
 
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)

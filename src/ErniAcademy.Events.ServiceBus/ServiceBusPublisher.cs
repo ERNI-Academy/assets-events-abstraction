@@ -26,7 +26,7 @@ public class ServiceBusPublisher : IEventPublisher
     }
 
     public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
-        where TEvent : class, IEvent, new() => PublishAsync(new TEvent[] { @event });
+        where TEvent : class, IEvent, new() => PublishAsync(new TEvent[] { @event }, cancellationToken);
 
     public async Task PublishAsync<TEvent>(TEvent[] events,CancellationToken cancellationToken = default)
         where TEvent : class, IEvent, new()
