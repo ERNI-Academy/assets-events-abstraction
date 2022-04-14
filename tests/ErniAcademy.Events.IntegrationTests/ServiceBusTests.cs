@@ -1,12 +1,10 @@
 using System;
-using System.IO;
-using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using ErniAcademy.Events.ServiceBus.Configuration;
 using ErniAcademy.Events.ServiceBus.Extensions;
-using ErniAcademy.Events.ServiceBus.Serializers;
+using ErniAcademy.Serializers.Contracts;
+using ErniAcademy.Serializers.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -51,37 +49,5 @@ public class ServiceBusTests : BaseTests
         await _processor.DisposeAsync();
 
         return result;
-    }
-
-
-    /// <summary>
-    /// TODO: Omar. Replace this with https://github.com/ERNI-Academy/assets-serializers-abstraction ISerializer
-    /// </summary>
-    private class JsonSerializer : ISerializer
-    {
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
-
-        public JsonSerializer(JsonSerializerOptions jsonSerializerOptions = null)
-        {
-            _jsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions();
-        }
-
-        public string ContentType => "application/json";
-
-        public void SerializeToStream<TItem>(TItem item, Stream stream) => SerializeToStreamAsync(item, stream).GetAwaiter().GetResult();
-
-        public async Task SerializeToStreamAsync<TItem>(TItem item, Stream stream, CancellationToken cancellationToken = default)
-        {
-            await System.Text.Json.JsonSerializer.SerializeAsync<TItem>(stream, item, _jsonSerializerOptions, cancellationToken);
-            stream.Position = 0;
-        }
-
-        public string SerializeToString<TItem>(TItem item) => System.Text.Json.JsonSerializer.Serialize<TItem>(item, _jsonSerializerOptions);
-
-        public TItem DeserializeFromStream<TItem>(Stream stream) => System.Text.Json.JsonSerializer.Deserialize<TItem>(stream, _jsonSerializerOptions);
-
-        public TItem DeserializeFromString<TItem>(string item) => System.Text.Json.JsonSerializer.Deserialize<TItem>(item, _jsonSerializerOptions);
-
-        public ValueTask<TItem> DeserializeFromStreamAsync<TItem>(Stream stream, CancellationToken cancellationToken = default) => System.Text.Json.JsonSerializer.DeserializeAsync<TItem>(stream, _jsonSerializerOptions, cancellationToken);
     }
 }

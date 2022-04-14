@@ -1,6 +1,6 @@
 using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.ServiceBus.ClientProvider;
-using ErniAcademy.Events.ServiceBus.Serializers;
+using ErniAcademy.Serializers.Contracts;
 using FluentAssertions;
 using NSubstitute;
 using System.IO;

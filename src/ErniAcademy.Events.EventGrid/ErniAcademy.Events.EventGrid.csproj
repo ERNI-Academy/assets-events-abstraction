@@ -21,6 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\..\assets-serializers-abstraction\src\ErniAcademy.Serializers.Contracts\ErniAcademy.Serializers.Contracts.csproj" />
 	  <ProjectReference Include="..\ErniAcademy.Events.Contracts\ErniAcademy.Events.Contracts.csproj" />
 	</ItemGroup>
 
