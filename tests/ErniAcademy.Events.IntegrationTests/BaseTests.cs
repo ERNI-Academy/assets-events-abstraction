@@ -21,7 +21,7 @@ namespace ErniAcademy.Events.IntegrationTests
 
             var tempConfig = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("tests.settings.Development.json", optional: false)
+                .AddJsonFile("tests.settings.Development.json", optional: true)
                 .Build();
 
             var isDevelopment = tempConfig.GetValue<string>("Environment") == "Development";
