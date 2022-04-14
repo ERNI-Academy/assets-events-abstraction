@@ -39,6 +39,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Serializers.Con
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Serializers.Json", "..\assets-serializers-abstraction\src\ErniAcademy.Serializers.Json\ErniAcademy.Serializers.Json.csproj", "{97B2514C-C6D3-472F-B76F-1A6B82F643D9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{63180E75-1A65-4BD3-9A84-8575591599BD}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\nugetpush.yml = .github\workflows\nugetpush.yml
+		.github\workflows\sonarcloud.yml = .github\workflows\sonarcloud.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +97,7 @@ Global
 		{D0D108E0-495F-42C0-9A01-F29330DDB01A} = {2D2DF22D-D0CE-4606-9E05-C323A911E0D9}
 		{AA67ECE3-64D9-420E-8909-BAC86DA39042} = {D0D108E0-495F-42C0-9A01-F29330DDB01A}
 		{97B2514C-C6D3-472F-B76F-1A6B82F643D9} = {D0D108E0-495F-42C0-9A01-F29330DDB01A}
+		{63180E75-1A65-4BD3-9A84-8575591599BD} = {C5B89AC1-B554-400E-AACA-CC33C2A3C789}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A45AECB9-C582-41C2-B1B2-E1F1684488D5}
