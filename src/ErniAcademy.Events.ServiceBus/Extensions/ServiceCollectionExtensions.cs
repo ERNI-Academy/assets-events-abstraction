@@ -3,7 +3,7 @@ using Azure.Messaging.ServiceBus;
 using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.ServiceBus.ClientProvider;
 using ErniAcademy.Events.ServiceBus.Configuration;
-using ErniAcademy.Events.ServiceBus.Serializers;
+using ErniAcademy.Serializers.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

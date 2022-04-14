@@ -1,7 +1,7 @@
 ﻿using Azure.Messaging.ServiceBus;
 using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.ServiceBus.ClientProvider;
-using ErniAcademy.Events.ServiceBus.Serializers;
+using ErniAcademy.Serializers.Contracts;
 using System.Collections.Concurrent;
 
 namespace ErniAcademy.Events.ServiceBus;

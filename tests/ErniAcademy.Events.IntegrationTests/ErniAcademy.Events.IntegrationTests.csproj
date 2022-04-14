@@ -29,6 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\..\assets-serializers-abstraction\src\ErniAcademy.Serializers.Json\ErniAcademy.Serializers.Json.csproj" />
 	  <ProjectReference Include="..\..\src\ErniAcademy.Events.EventGrid\ErniAcademy.Events.EventGrid.csproj" />
 	  <ProjectReference Include="..\..\src\ErniAcademy.Events.ServiceBus\ErniAcademy.Events.ServiceBus.csproj" />
 	</ItemGroup>

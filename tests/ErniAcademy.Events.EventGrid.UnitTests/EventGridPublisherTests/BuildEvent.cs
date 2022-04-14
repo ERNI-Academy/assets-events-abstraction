@@ -1,7 +1,7 @@
 ﻿using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.EventGrid.ClientProvider;
 using ErniAcademy.Events.EventGrid.Configuration;
-using ErniAcademy.Events.EventGrid.Serializers;
+using ErniAcademy.Serializers.Contracts;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using NSubstitute;

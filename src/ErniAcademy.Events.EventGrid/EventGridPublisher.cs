@@ -3,7 +3,7 @@ using ErniAcademy.Events.Contracts;
 using Microsoft.Extensions.Options;
 using ErniAcademy.Events.EventGrid.Configuration;
 using ErniAcademy.Events.EventGrid.ClientProvider;
-using ErniAcademy.Events.EventGrid.Serializers;
+using ErniAcademy.Serializers.Contracts;
 
 namespace ErniAcademy.Events.EventGrid;
 
