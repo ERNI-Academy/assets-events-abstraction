@@ -25,10 +25,10 @@ jobs:
         with:
             files: 'tests/ErniAcademy.Events.IntegrationTests/tests.settings.json'
         env:
-            Events:ServiceBus:ConnectionString: test
-            Events:EventGrid:Endpoint: test
-            Events:EventGrid:Key: test
-            Events:EventGrid:ConnectionString: test
+            Events.ServiceBus.ConnectionString: test
+            Events.EventGrid.Endpoint: test
+            Events.EventGrid.Key: test
+            Events.EventGrid.ConnectionString: test
       
       #Skip for now TODO Omar enable this
       #- name: Set up JDK 11
