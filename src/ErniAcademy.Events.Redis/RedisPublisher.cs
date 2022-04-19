@@ -7,8 +7,6 @@ namespace ErniAcademy.Events.Redis;
 public class RedisPublisher : IEventPublisher
 {
     private readonly Lazy<ISubscriber> _subscriberLazy;
-    private ISubscriber _subscriber => _subscriberLazy.Value;
-
     private readonly ISerializer _serializer;
     private readonly IEventNameResolver _eventNameResolver;
 
@@ -27,7 +25,7 @@ public class RedisPublisher : IEventPublisher
     {
         var redisChannel = new RedisChannel(_eventNameResolver.Resolve(@event), RedisChannel.PatternMode.Auto);
         var redisValue = new RedisValue(_serializer.SerializeToString(@event));
-        return _subscriber.PublishAsync(redisChannel, redisValue, CommandFlags.FireAndForget);
+        return _subscriberLazy.Value.PublishAsync(redisChannel, redisValue, CommandFlags.FireAndForget);
     }
 
     public async Task PublishAsync<TEvent>(TEvent[] events, CancellationToken cancellationToken = default)

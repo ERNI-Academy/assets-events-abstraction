@@ -37,4 +37,26 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    public static IServiceCollection AddEventsSubscriberRedis<TEvent>(this IServiceCollection services,
+        IConfiguration configuration,
+        ISerializer serializer,
+        string sectionKey)
+        where TEvent : class, IEvent, new()
+    {
+        services.AddOptions<ConnectionStringOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
+
+        services.TryAddSingleton<IConnectionMultiplexerProvider, ConnectionMultiplexerProvider>();
+        services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+
+        services.TryAddSingleton<IEventSubscriber<TEvent>>(provider =>
+        {
+            var connectionMultiplexerProvider = provider.GetRequiredService<IConnectionMultiplexerProvider>();
+            var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
+
+            return new RedisSubscriber<TEvent>(connectionMultiplexerProvider, serializer, eventNameResolver);
+        });
+
+        return services;
+    }
 }

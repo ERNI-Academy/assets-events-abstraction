@@ -10,8 +10,8 @@ public class ServiceBusSubscriber<TEvent> : IEventSubscriber<TEvent>
     where TEvent : class, IEvent, new()
 {
     private readonly ServiceBusProcessor _processor;
-    private readonly ConcurrentDictionary<string, Func<TEvent, Task>> _handlers;
     private readonly ISerializer _serializer;
+    private readonly ConcurrentDictionary<string, Func<TEvent, Task>> _handlers;
 
     public ServiceBusSubscriber(
         IServiceBusProcessorProvider serviceBusProcessorProvider, 
@@ -26,19 +26,9 @@ public class ServiceBusSubscriber<TEvent> : IEventSubscriber<TEvent>
         _handlers = new ConcurrentDictionary<string, Func<TEvent, Task>>();
     }
 
-    public Task SubscribeAsync(Func<TEvent, Task> handler, CancellationToken cancellationToken = default)
-    {
-        _handlers.TryAdd(handler.GetType().FullName, handler);
+    public void Subscribe(Func<TEvent, Task> handler) => _handlers.TryAdd(handler.GetType().FullName, handler);
 
-        return Task.CompletedTask;
-    }
-
-    public Task UnSubscribeAsync(Func<TEvent, Task> handler, CancellationToken cancellationToken = default)
-    {
-        _handlers.TryRemove(handler.GetType().FullName, out Func<TEvent, Task> removed);
-
-        return Task.CompletedTask;
-    }
+    public void UnSubscribe(Func<TEvent, Task> handler) => _handlers.TryRemove(handler.GetType().FullName, out Func<TEvent, Task> removed);
 
     public async Task StarProcessingAsync(CancellationToken cancellationToken = default)
     {

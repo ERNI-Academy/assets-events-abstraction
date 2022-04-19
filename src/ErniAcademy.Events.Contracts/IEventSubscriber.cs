@@ -6,9 +6,9 @@
 public interface IEventSubscriber<TEvent>
     where TEvent : class, IEvent, new()
 {
-    Task SubscribeAsync(Func<TEvent, Task> handler, CancellationToken cancellationToken = default);
+    void Subscribe(Func<TEvent, Task> handler);
 
-    Task UnSubscribeAsync(Func<TEvent, Task> handler, CancellationToken cancellationToken = default);
+    void UnSubscribe(Func<TEvent, Task> handler);
 
     Task StarProcessingAsync(CancellationToken cancellationToken = default);
 
