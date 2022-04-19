@@ -33,6 +33,7 @@
 	  <ProjectReference Include="..\..\src\ErniAcademy.Events.EventGrid\ErniAcademy.Events.EventGrid.csproj" />
 	  <ProjectReference Include="..\..\src\ErniAcademy.Events.Redis\ErniAcademy.Events.Redis.csproj" />
 	  <ProjectReference Include="..\..\src\ErniAcademy.Events.ServiceBus\ErniAcademy.Events.ServiceBus.csproj" />
+	  <ProjectReference Include="..\..\src\ErniAcademy.Events.StorageQueues\ErniAcademy.Events.StorageQueues.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
