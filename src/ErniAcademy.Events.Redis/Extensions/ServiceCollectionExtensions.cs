@@ -1,7 +1,4 @@
-﻿using Azure.Core;
-using ErniAcademy.Events.Contracts;
-using ErniAcademy.Events.EventGrid.ClientProvider;
-using ErniAcademy.Events.EventGrid.Configuration;
+﻿using ErniAcademy.Events.Contracts;
 using ErniAcademy.Serializers.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +9,7 @@ namespace ErniAcademy.Events.Redis.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddEventGridFromKey(this IServiceCollection services,
+    public static IServiceCollection AddRedis(this IServiceCollection services,
         ISerializer serializer,
         string sectionKey)
     {

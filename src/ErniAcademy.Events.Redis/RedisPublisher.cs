@@ -22,14 +22,6 @@ public class RedisPublisher : IEventPublisher
         _subscriberLazy = new Lazy<ISubscriber>(provider.Connection.GetSubscriber());
     }
 
-    public Task PublishAsync<TEvent>(TEvent @event) 
-        where TEvent : class, IEvent, new()
-    {
-        var redisChannel = new RedisChannel(_eventNameResolver.Resolve(@event), RedisChannel.PatternMode.Auto);
-        var redisValue = new RedisValue(_serializer.SerializeToString(@event));
-        return _subscriber.PublishAsync(redisChannel, redisValue, CommandFlags.FireAndForget);
-    }
-
     public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken)
         where TEvent : class, IEvent, new()
     {
@@ -38,11 +30,12 @@ public class RedisPublisher : IEventPublisher
         return _subscriber.PublishAsync(redisChannel, redisValue, CommandFlags.FireAndForget);
     }
 
-    public Task PublishAsync<TEvent>(TEvent[] events, CancellationToken cancellationToken)
+    public async Task PublishAsync<TEvent>(TEvent[] events, CancellationToken cancellationToken)
+        where TEvent : class, IEvent, new()
     {
         foreach (var @event in events)
         {
-
+           await PublishAsync<TEvent>(@event, cancellationToken);    
         }
     }
 }
