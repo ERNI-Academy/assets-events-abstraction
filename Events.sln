@@ -47,6 +47,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Serializers.Jso
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Events.Contracts.UnitTests", "tests\ErniAcademy.Events.Contracts.UnitTests\ErniAcademy.Events.Contracts.UnitTests.csproj", "{182B66FF-5130-46C8-8BBD-378B0A535AA1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErniAcademy.Events.Redis", "src\ErniAcademy.Events.Redis\ErniAcademy.Events.Redis.csproj", "{DE2FE582-3335-4BC7-870B-B2BCEB6F8E3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +91,10 @@ Global
 		{182B66FF-5130-46C8-8BBD-378B0A535AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{182B66FF-5130-46C8-8BBD-378B0A535AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{182B66FF-5130-46C8-8BBD-378B0A535AA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE2FE582-3335-4BC7-870B-B2BCEB6F8E3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE2FE582-3335-4BC7-870B-B2BCEB6F8E3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE2FE582-3335-4BC7-870B-B2BCEB6F8E3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE2FE582-3335-4BC7-870B-B2BCEB6F8E3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +110,7 @@ Global
 		{6CB5AC04-CB9A-4B4B-8554-5CEE6683036B} = {4D85CD0C-39D4-4702-9488-D40C469E15A8}
 		{472A26F2-0676-4329-BB2A-C472EAD0EA2E} = {4D85CD0C-39D4-4702-9488-D40C469E15A8}
 		{182B66FF-5130-46C8-8BBD-378B0A535AA1} = {E9BEC824-50B2-4246-9250-636486A70721}
+		{DE2FE582-3335-4BC7-870B-B2BCEB6F8E3D} = {2D2DF22D-D0CE-4606-9E05-C323A911E0D9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A45AECB9-C582-41C2-B1B2-E1F1684488D5}

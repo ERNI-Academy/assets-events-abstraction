@@ -9,73 +9,72 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
-namespace ErniAcademy.Events.ServiceBus.Extensions
+namespace ErniAcademy.Events.ServiceBus.Extensions;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    public static IServiceCollection AddServiceBusFromConnectionString(this IServiceCollection services,
+        ISerializer serializer,
+        string sectionKey,
+        ServiceBusClientOptions busOptions = null)
     {
-        public static IServiceCollection AddServiceBusFromConnectionString(this IServiceCollection services,
-            ISerializer serializer,
-            string sectionKey,
-            ServiceBusClientOptions busOptions = null)
+        services.AddOptions();
+        services.ConfigureOptions<ConnectionStringOptions>(sectionKey);
+
+        services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+
+        services.TryAddSingleton<IEventPublisher>(provider =>
         {
-            services.AddOptions();
-            services.ConfigureOptions<ConnectionStringOptions>(sectionKey);
+            var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
+            var serviceBusClientProvider = new ConnectionStringProvider(
+                provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(),
+                busOptions);
 
-            services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+            return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
+        });
 
-            services.TryAddSingleton<IEventPublisher>(provider =>
-            {
-                var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
-                var serviceBusClientProvider = new ConnectionStringProvider(
-                    provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(),
-                    busOptions);
+        return services;
+    }
 
-                return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
-            });
+    public static IServiceCollection AdderviceBusFromTokenCredential(this IServiceCollection services,
+        TokenCredential tokenCredential,
+        ISerializer serializer,
+        string sectionKey,
+        ServiceBusClientOptions busOptions = null)
+    {
+        services.AddOptions();
+        services.ConfigureOptions<FullyQualifiedNamespaceOptions>(sectionKey);
 
-            return services;
-        }
+        services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
-        public static IServiceCollection AdderviceBusFromTokenCredential(this IServiceCollection services,
-            TokenCredential tokenCredential,
-            ISerializer serializer,
-            string sectionKey,
-            ServiceBusClientOptions busOptions = null)
+        services.TryAddSingleton<IEventPublisher>(provider =>
         {
-            services.AddOptions();
-            services.ConfigureOptions<FullyQualifiedNamespaceOptions>(sectionKey);
+            var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
+            var serviceBusClientProvider = new TokenCredentialProvider(
+                provider.GetRequiredService<IOptionsMonitor<FullyQualifiedNamespaceOptions>>(),
+                tokenCredential,
+                busOptions);
 
-            services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+            return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
+        });
 
-            services.TryAddSingleton<IEventPublisher>(provider =>
-            {
-                var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
-                var serviceBusClientProvider = new TokenCredentialProvider(
-                    provider.GetRequiredService<IOptionsMonitor<FullyQualifiedNamespaceOptions>>(),
-                    tokenCredential,
-                    busOptions);
+        return services;
+    }
 
-                return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
-            });
-
-            return services;
-        }
-
-        internal static IServiceCollection ConfigureOptions<TOptions>(this IServiceCollection services, string sectionKey)
-             where TOptions : class, new()
+    internal static IServiceCollection ConfigureOptions<TOptions>(this IServiceCollection services, string sectionKey)
+         where TOptions : class, new()
+    {
+        services.AddSingleton((Func<IServiceProvider, IConfigureOptions<TOptions>>)(p =>
         {
-            services.AddSingleton((Func<IServiceProvider, IConfigureOptions<TOptions>>)(p =>
-            {
-                var configuration = p.GetRequiredService<IConfiguration>();
-                var options = new ConfigureFromConfigurationOptions<TOptions>(configuration.GetSection(sectionKey));
+            var configuration = p.GetRequiredService<IConfiguration>();
+            var options = new ConfigureFromConfigurationOptions<TOptions>(configuration.GetSection(sectionKey));
 
-                var settings = new TOptions();
-                options.Action(settings);
+            var settings = new TOptions();
+            options.Action(settings);
 
-                return options;
-            }));
+            return options;
+        }));
 
-            return services;
-        }
+        return services;
     }
 }
