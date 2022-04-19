@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using ErniAcademy.Events.Redis.Configuration;
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace ErniAcademy.Events.Redis;

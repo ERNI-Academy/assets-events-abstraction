@@ -8,6 +8,9 @@
       "Endpoint": "",
       "Key": "",
       "ConnectionString": ""
+    },
+    "Redis": {
+      "ConnectionString": ""
     }
   }
 }

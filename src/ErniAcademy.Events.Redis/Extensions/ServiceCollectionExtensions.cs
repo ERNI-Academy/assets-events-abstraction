@@ -1,4 +1,5 @@
 ﻿using ErniAcademy.Events.Contracts;
+using ErniAcademy.Events.Redis.Configuration;
 using ErniAcademy.Serializers.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

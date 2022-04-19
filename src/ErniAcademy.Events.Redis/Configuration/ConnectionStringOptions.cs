@@ -1,4 +1,4 @@
-﻿namespace ErniAcademy.Events.Redis;
+﻿namespace ErniAcademy.Events.Redis.Configuration;
 
 public class ConnectionStringOptions
 {
