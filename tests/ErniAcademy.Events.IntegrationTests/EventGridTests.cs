@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Threading.Tasks;
 using Azure.Messaging.EventGrid;
@@ -6,6 +7,7 @@ using Azure.Storage.Queues;
 using ErniAcademy.Events.EventGrid.Extensions;
 using ErniAcademy.Serializers.Contracts;
 using ErniAcademy.Serializers.Json;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -23,10 +25,12 @@ public class EventGridTests : BaseTests
         _processor.ClearMessages();
     }
 
-    protected override IServiceCollection RegisterSut(IServiceCollection services)
+    protected override IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddEventGridFromKey(_serializer, sectionKey: "Events:EventGrid");
-        services.ConfigureOptions<QueueOptions>(sectionKey: "Events:EventGrid");
+        services.AddEventGridFromKey(configuration, _serializer, sectionKey: "Events:EventGrid");
+
+        services.AddOptions<QueueOptions>().Bind(configuration.GetSection("Events:EventGrid")).ValidateDataAnnotations();
+
         return services;
     }
 
@@ -47,6 +51,7 @@ public class EventGridTests : BaseTests
 
     private class QueueOptions
     {
+        [Required]
         public string ConnectionString { get; set; }
     }
 }

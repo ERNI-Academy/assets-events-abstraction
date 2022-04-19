@@ -13,13 +13,13 @@ namespace ErniAcademy.Events.EventGrid.Extensions;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddEventGridFromKey(this IServiceCollection services,
+        IConfiguration configuration,
         ISerializer serializer,
         string sectionKey)
     {
-        services.AddOptions();
-        services.ConfigureOptions<TopicOptions>(sectionKey);
-        services.ConfigureOptions<KeyOptions>(sectionKey);
-        services.ConfigureOptions<PublisherOptions>(sectionKey);
+        services.AddOptions<TopicOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
+        services.AddOptions<KeyOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
+        services.AddOptions<PublisherOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
 
         services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
@@ -39,13 +39,13 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection AddEventGridFromTokenCredential(this IServiceCollection services,
-        TokenCredential tokenCredential,
+        IConfiguration configuration,        
         ISerializer serializer, 
-        string sectionKey)
+        string sectionKey,
+        TokenCredential tokenCredential)
     {
-        services.AddOptions();
-        services.ConfigureOptions<TopicOptions>(sectionKey);
-        services.ConfigureOptions<PublisherOptions>(sectionKey);
+        services.AddOptions<TopicOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
+        services.AddOptions<PublisherOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
 
         services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
@@ -60,23 +60,6 @@ public static class ServiceCollectionExtensions
 
             return new EventGridPublisher(serviceBusClientProvider, eventNameResolver, serializer, options);
         });
-
-        return services;
-    }
-
-    internal static IServiceCollection ConfigureOptions<TOptions>(this IServiceCollection services, string sectionKey)
-         where TOptions : class, new()
-    {
-        services.AddSingleton((Func<IServiceProvider, IConfigureOptions<TOptions>>)(p =>
-        {
-            var configuration = p.GetRequiredService<IConfiguration>();
-            var options = new ConfigureFromConfigurationOptions<TOptions>(configuration.GetSection(sectionKey));
-
-            var settings = new TOptions();
-            options.Action(settings);
-
-            return options;
-        }));
 
         return services;
     }

@@ -4,6 +4,7 @@ using ErniAcademy.Events.Redis;
 using ErniAcademy.Events.Redis.Extensions;
 using ErniAcademy.Serializers.Contracts;
 using ErniAcademy.Serializers.Json;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 
@@ -25,9 +26,9 @@ public class RedisTests : BaseTests
         });
     }
 
-    protected override IServiceCollection RegisterSut(IServiceCollection services)
+    protected override IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddRedis(_serializer, sectionKey: "Events:Redis");
+        services.AddRedis(configuration, _serializer, sectionKey: "Events:Redis");
         return services;
     }
 

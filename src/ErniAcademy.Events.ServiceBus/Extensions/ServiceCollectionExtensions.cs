@@ -14,12 +14,12 @@ namespace ErniAcademy.Events.ServiceBus.Extensions;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddServiceBusFromConnectionString(this IServiceCollection services,
+        IConfiguration configuration,
         ISerializer serializer,
         string sectionKey,
         ServiceBusClientOptions busOptions = null)
     {
-        services.AddOptions();
-        services.ConfigureOptions<ConnectionStringOptions>(sectionKey);
+        services.AddOptions<ConnectionStringOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
 
         services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
@@ -37,13 +37,13 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection AdderviceBusFromTokenCredential(this IServiceCollection services,
-        TokenCredential tokenCredential,
+        IConfiguration configuration,
         ISerializer serializer,
         string sectionKey,
+        TokenCredential tokenCredential,
         ServiceBusClientOptions busOptions = null)
     {
-        services.AddOptions();
-        services.ConfigureOptions<FullyQualifiedNamespaceOptions>(sectionKey);
+        services.AddOptions<FullyQualifiedNamespaceOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
 
         services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
@@ -57,23 +57,6 @@ public static class ServiceCollectionExtensions
 
             return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
         });
-
-        return services;
-    }
-
-    internal static IServiceCollection ConfigureOptions<TOptions>(this IServiceCollection services, string sectionKey)
-         where TOptions : class, new()
-    {
-        services.AddSingleton((Func<IServiceProvider, IConfigureOptions<TOptions>>)(p =>
-        {
-            var configuration = p.GetRequiredService<IConfiguration>();
-            var options = new ConfigureFromConfigurationOptions<TOptions>(configuration.GetSection(sectionKey));
-
-            var settings = new TOptions();
-            options.Action(settings);
-
-            return options;
-        }));
 
         return services;
     }

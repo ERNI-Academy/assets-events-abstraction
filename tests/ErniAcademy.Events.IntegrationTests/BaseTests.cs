@@ -26,20 +26,22 @@ namespace ErniAcademy.Events.IntegrationTests
 
             var isDevelopment = tempConfig.GetValue<string>("Environment") == "Development";
 
-            services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
+            var configuration = new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile(isDevelopment ? "tests.settings.Development.json" : "tests.settings.json", optional: false)
                 .AddEnvironmentVariables()
-                .Build());
+                .Build();
 
-            RegisterSut(services);
+            services.AddSingleton<IConfiguration>(configuration);
+
+            RegisterSut(services, configuration);
 
             _provider = services.BuildServiceProvider();
 
             _sut = _provider.GetService<IEventPublisher>();
         }
 
-        protected abstract IServiceCollection RegisterSut(IServiceCollection services);
+        protected abstract IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration);
         protected abstract Task<DummyEvent> WaitForReceive();
 
         [Fact]
