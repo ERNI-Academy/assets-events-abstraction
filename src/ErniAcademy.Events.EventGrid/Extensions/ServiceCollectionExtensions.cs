@@ -13,7 +13,7 @@ namespace ErniAcademy.Events.EventGrid.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Extension method to configure IEventPublisher contract with EventGridPublisher by default will use connection string options to connect to EventGrid
+    /// Extension method to configure IEventPublisher contract with EventGridPublisher by default will use key options to connect to EventGrid
     /// </summary>
     /// <param name="services">the ServiceCollection</param>
     /// <param name="configuration">the Configuration used to bind and configure the options</param>
@@ -61,6 +61,11 @@ public static class ServiceCollectionExtensions
         string sectionKey,
         TokenCredential tokenCredential)
     {
+        if (tokenCredential == null)
+        {
+            throw new ArgumentNullException(nameof(tokenCredential));
+        }
+
         services.AddOptions<TopicOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
         services.AddOptions<PublisherOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
 
