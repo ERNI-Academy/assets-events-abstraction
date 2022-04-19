@@ -31,7 +31,7 @@ public class StorageQueuePublisher : IEventPublisher
         var client = GetClient(_eventNameResolver.Resolve<TEvent>());
 
         var message = await BuildMessage(@event);
-        await client.SendMessageAsync(message);
+        await client.SendMessageAsync(message, visibilityTimeout: null, timeToLive: null, cancellationToken);
     }
 
     public async Task PublishAsync<TEvent>(TEvent[] events,CancellationToken cancellationToken = default)
