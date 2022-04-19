@@ -9,73 +9,79 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
-namespace ErniAcademy.Events.ServiceBus.Extensions
+namespace ErniAcademy.Events.ServiceBus.Extensions;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    /// <summary>
+    /// Extension method to configure IEventPublisher contract with ServiceBusPublisher by default will use connection string options to connect to ServiceBus
+    /// </summary>
+    /// <param name="services">the ServiceCollection</param>
+    /// <param name="configuration">the Configuration used to bind and configure the options</param>
+    /// <param name="serializer">the serializer to be use</param>
+    /// <param name="sectionKey">the configuration section key to get the options</param>
+    /// <param name="busOptions">the ServiceBus options for extra configuration</param>
+    /// <returns>IServiceCollection</returns>
+    public static IServiceCollection AddEventsServiceBus(this IServiceCollection services,
+        IConfiguration configuration,
+        ISerializer serializer,
+        string sectionKey,
+        ServiceBusClientOptions busOptions = null)
     {
-        public static IServiceCollection AddServiceBusFromConnectionString(this IServiceCollection services,
-            ISerializer serializer,
-            string sectionKey,
-            ServiceBusClientOptions busOptions = null)
+        services.AddOptions<ConnectionStringOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
+
+        services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+
+        services.TryAddSingleton<IEventPublisher>(provider =>
         {
-            services.AddOptions();
-            services.ConfigureOptions<ConnectionStringOptions>(sectionKey);
+            var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
+            var serviceBusClientProvider = new ConnectionStringProvider(
+                provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(),
+                busOptions);
 
-            services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+            return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
+        });
 
-            services.TryAddSingleton<IEventPublisher>(provider =>
-            {
-                var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
-                var serviceBusClientProvider = new ConnectionStringProvider(
-                    provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(),
-                    busOptions);
+        return services;
+    }
 
-                return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
-            });
-
-            return services;
+    /// <summary>
+    /// Extension method to configure IEventPublisher contract with ServiceBusPublisher with TokenCredential options to connect to ServiceBus
+    /// </summary>
+    /// <param name="services">the ServiceCollection</param>
+    /// <param name="configuration">the Configuration used to bind and configure the options</param>
+    /// <param name="serializer">the serializer to be use</param>
+    /// <param name="sectionKey">the configuration section key to get the options</param>
+    /// <param name="tokenCredential">the TokenCredential instance</param>
+    /// <param name="busOptions">the ServiceBus options for extra configuration</param>
+    /// <returns>IServiceCollection</returns>
+    public static IServiceCollection AddEventsServiceBus(this IServiceCollection services,
+        IConfiguration configuration,
+        ISerializer serializer,
+        string sectionKey,
+        TokenCredential tokenCredential,
+        ServiceBusClientOptions busOptions = null)
+    {
+        if (tokenCredential == null)
+        {
+            throw new ArgumentNullException(nameof(tokenCredential));
         }
 
-        public static IServiceCollection AdderviceBusFromTokenCredential(this IServiceCollection services,
-            TokenCredential tokenCredential,
-            ISerializer serializer,
-            string sectionKey,
-            ServiceBusClientOptions busOptions = null)
+        services.AddOptions<FullyQualifiedNamespaceOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
+
+        services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+
+        services.TryAddSingleton<IEventPublisher>(provider =>
         {
-            services.AddOptions();
-            services.ConfigureOptions<FullyQualifiedNamespaceOptions>(sectionKey);
+            var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
+            var serviceBusClientProvider = new TokenCredentialProvider(
+                provider.GetRequiredService<IOptionsMonitor<FullyQualifiedNamespaceOptions>>(),
+                tokenCredential,
+                busOptions);
 
-            services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+            return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
+        });
 
-            services.TryAddSingleton<IEventPublisher>(provider =>
-            {
-                var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
-                var serviceBusClientProvider = new TokenCredentialProvider(
-                    provider.GetRequiredService<IOptionsMonitor<FullyQualifiedNamespaceOptions>>(),
-                    tokenCredential,
-                    busOptions);
-
-                return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
-            });
-
-            return services;
-        }
-
-        internal static IServiceCollection ConfigureOptions<TOptions>(this IServiceCollection services, string sectionKey)
-             where TOptions : class, new()
-        {
-            services.AddSingleton((Func<IServiceProvider, IConfigureOptions<TOptions>>)(p =>
-            {
-                var configuration = p.GetRequiredService<IConfiguration>();
-                var options = new ConfigureFromConfigurationOptions<TOptions>(configuration.GetSection(sectionKey));
-
-                var settings = new TOptions();
-                options.Action(settings);
-
-                return options;
-            }));
-
-            return services;
-        }
+        return services;
     }
 }

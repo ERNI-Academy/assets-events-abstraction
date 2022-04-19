@@ -8,6 +8,12 @@
       "Endpoint": "",
       "Key": "",
       "ConnectionString": ""
+    },
+    "Redis": {
+      "ConnectionString": ""
+    },
+    "StorageQueues": {
+      "ConnectionString": ""
     }
   }
 }

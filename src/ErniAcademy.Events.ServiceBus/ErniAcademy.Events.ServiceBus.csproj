@@ -7,8 +7,8 @@
 		<RepositoryType>git</RepositoryType>
 		<Authors>ErniAcademy</Authors>
 		<Company>Erni</Company>
-		<PackageDescription>Events ServiceBus publisher</PackageDescription>
-		<PackageTags>Events ServiceBus Topic Queue</PackageTags>
+		<PackageDescription>Events Azure ServiceBus publisher</PackageDescription>
+		<PackageTags>Events Azure ServiceBus Topic Queue</PackageTags>
 		<VersionPrefix>1.0.0</VersionPrefix>
 	</PropertyGroup>
 
@@ -18,16 +18,12 @@
 	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
 	  <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
 	  <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>ErniAcademy.Events.ServiceBus.UnitTests</_Parameter1>
-		</AssemblyAttribute>
-	</ItemGroup>
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-			<_Parameter1>ErniAcademy.Events.IntegrationTests</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
 

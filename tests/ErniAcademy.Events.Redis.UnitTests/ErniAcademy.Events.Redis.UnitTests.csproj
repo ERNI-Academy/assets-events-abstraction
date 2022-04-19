@@ -1,11 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
 		<PackageReference Include="FluentAssertions" Version="6.6.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
@@ -25,8 +26,8 @@
 		</PackageReference>
 	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\ErniAcademy.Events.EventGrid\ErniAcademy.Events.EventGrid.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\src\ErniAcademy.Events.Redis\ErniAcademy.Events.Redis.csproj" />
+	</ItemGroup>
 
 </Project>

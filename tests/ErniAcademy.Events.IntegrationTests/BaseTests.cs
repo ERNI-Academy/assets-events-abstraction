@@ -26,20 +26,22 @@ namespace ErniAcademy.Events.IntegrationTests
 
             var isDevelopment = tempConfig.GetValue<string>("Environment") == "Development";
 
-            services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
+            var configuration = new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile(isDevelopment ? "tests.settings.Development.json" : "tests.settings.json", optional: false)
                 .AddEnvironmentVariables()
-                .Build());
+                .Build();
 
-            RegisterSut(services);
+            services.AddSingleton<IConfiguration>(configuration);
+
+            RegisterSut(services, configuration);
 
             _provider = services.BuildServiceProvider();
 
             _sut = _provider.GetService<IEventPublisher>();
         }
 
-        protected abstract IServiceCollection RegisterSut(IServiceCollection services);
+        protected abstract IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration);
         protected abstract Task<DummyEvent> WaitForReceive();
 
         [Fact]
@@ -58,6 +60,27 @@ namespace ErniAcademy.Events.IntegrationTests
             var actual = await WaitForReceive();
 
             actual.Should().BeEquivalentTo(@event);
+        }
+
+        [Fact]
+        public virtual async Task Publish_events_should_be_received_by_a_consumer()
+        {
+            //Arrange
+            var @events = new[] 
+            {
+                new DummyEvent
+                {
+                    Title = "Integration test event " + Guid.NewGuid()
+                } 
+            };
+
+            //Act
+            await _sut.PublishAsync(@events);
+
+            //Assert
+            var actual = await WaitForReceive();
+
+            actual.Should().BeEquivalentTo(@events[0]);
         }
     }
 }

@@ -5,6 +5,7 @@ using ErniAcademy.Events.ServiceBus.Configuration;
 using ErniAcademy.Events.ServiceBus.Extensions;
 using ErniAcademy.Serializers.Contracts;
 using ErniAcademy.Serializers.Json;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -22,9 +23,9 @@ public class ServiceBusTests : BaseTests
         _processor = client.CreateProcessor("dummyevent", "testprocessor", new ServiceBusProcessorOptions());
     }
 
-    protected override IServiceCollection RegisterSut(IServiceCollection services)
+    protected override IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddServiceBusFromConnectionString(_serializer, sectionKey: "Events:ServiceBus");
+        services.AddEventsServiceBus(configuration, _serializer, sectionKey: "Events:ServiceBus");
         return services;
     }
 
