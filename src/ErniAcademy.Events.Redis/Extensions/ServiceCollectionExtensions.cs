@@ -14,7 +14,6 @@ public static class ServiceCollectionExtensions
         ISerializer serializer,
         string sectionKey)
     {
-        services.AddOptions();
         services.AddOptions<ConnectionStringOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
 
         services.TryAddSingleton<IConnectionMultiplexerProvider, ConnectionMultiplexerProvider>();
