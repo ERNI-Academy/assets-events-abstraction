@@ -7,8 +7,8 @@
 		<RepositoryType>git</RepositoryType>
 		<Authors>ErniAcademy</Authors>
 		<Company>Erni</Company>
-		<PackageDescription>Events EventGrid publisher</PackageDescription>
-		<PackageTags>Events EventGrid</PackageTags>
+		<PackageDescription>Events Azure EventGrid publisher</PackageDescription>
+		<PackageTags>Events Azure EventGrid</PackageTags>
 		<VersionPrefix>1.0.0</VersionPrefix>
 	</PropertyGroup>
 

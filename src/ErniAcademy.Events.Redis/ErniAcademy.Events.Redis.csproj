@@ -7,8 +7,8 @@
 		<RepositoryType>git</RepositoryType>
 		<Authors>ErniAcademy</Authors>
 		<Company>Erni</Company>
-		<PackageDescription>Events Redis publisher</PackageDescription>
-		<PackageTags>Events Redis</PackageTags>
+		<PackageDescription>Events Azure Redis publisher</PackageDescription>
+		<PackageTags>Events Azure Redis</PackageTags>
 		<VersionPrefix>1.0.0</VersionPrefix>
 	</PropertyGroup>
 

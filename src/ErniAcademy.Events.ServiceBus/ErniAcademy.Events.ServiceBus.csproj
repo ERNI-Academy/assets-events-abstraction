@@ -7,8 +7,8 @@
 		<RepositoryType>git</RepositoryType>
 		<Authors>ErniAcademy</Authors>
 		<Company>Erni</Company>
-		<PackageDescription>Events ServiceBus publisher</PackageDescription>
-		<PackageTags>Events ServiceBus Topic Queue</PackageTags>
+		<PackageDescription>Events Azure ServiceBus publisher</PackageDescription>
+		<PackageTags>Events Azure ServiceBus Topic Queue</PackageTags>
 		<VersionPrefix>1.0.0</VersionPrefix>
 	</PropertyGroup>
 
