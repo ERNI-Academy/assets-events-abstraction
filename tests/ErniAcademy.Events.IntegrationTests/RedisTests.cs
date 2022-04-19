@@ -28,7 +28,7 @@ public class RedisTests : BaseTests
 
     protected override IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddRedis(configuration, _serializer, sectionKey: "Events:Redis");
+        services.AddEventsRedis(configuration, _serializer, sectionKey: "Events:Redis");
         return services;
     }
 

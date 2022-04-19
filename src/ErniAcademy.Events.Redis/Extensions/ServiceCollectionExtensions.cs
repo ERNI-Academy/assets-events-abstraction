@@ -9,7 +9,15 @@ namespace ErniAcademy.Events.Redis.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddRedis(this IServiceCollection services,
+    /// <summary>
+    /// Extension method to configure IEventPublisher contract with RedisPublisher by default will use connection string options to connect to Redis database
+    /// </summary>
+    /// <param name="services">the ServiceCollection</param>
+    /// <param name="configuration">the Configuration used to bind and configure the options</param>
+    /// <param name="serializer">the serializer to be use</param>
+    /// <param name="sectionKey">the configuration section key to get the options</param>
+    /// <returns>IServiceCollection</returns>
+    public static IServiceCollection AddEventsRedis(this IServiceCollection services,
         IConfiguration configuration,
         ISerializer serializer,
         string sectionKey)

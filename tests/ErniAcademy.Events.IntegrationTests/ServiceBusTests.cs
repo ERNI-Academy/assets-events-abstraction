@@ -25,7 +25,7 @@ public class ServiceBusTests : BaseTests
 
     protected override IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddServiceBusFromConnectionString(configuration, _serializer, sectionKey: "Events:ServiceBus");
+        services.AddEventsServiceBus(configuration, _serializer, sectionKey: "Events:ServiceBus");
         return services;
     }
 

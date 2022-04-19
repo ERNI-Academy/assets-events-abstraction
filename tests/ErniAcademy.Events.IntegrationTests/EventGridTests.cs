@@ -27,7 +27,7 @@ public class EventGridTests : BaseTests
 
     protected override IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddEventGridFromKey(configuration, _serializer, sectionKey: "Events:EventGrid");
+        services.AddEventsEventGrid(configuration, _serializer, sectionKey: "Events:EventGrid");
 
         services.AddOptions<QueueOptions>().Bind(configuration.GetSection("Events:EventGrid")).ValidateDataAnnotations();
 

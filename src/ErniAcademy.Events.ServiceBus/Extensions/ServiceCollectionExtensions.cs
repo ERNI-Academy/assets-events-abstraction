@@ -13,7 +13,16 @@ namespace ErniAcademy.Events.ServiceBus.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddServiceBusFromConnectionString(this IServiceCollection services,
+    /// <summary>
+    /// Extension method to configure IEventPublisher contract with ServiceBusPublisher by default will use connection string options to connect to ServiceBus
+    /// </summary>
+    /// <param name="services">the ServiceCollection</param>
+    /// <param name="configuration">the Configuration used to bind and configure the options</param>
+    /// <param name="serializer">the serializer to be use</param>
+    /// <param name="sectionKey">the configuration section key to get the options</param>
+    /// <param name="busOptions">the ServiceBus options for extra configuration</param>
+    /// <returns>IServiceCollection</returns>
+    public static IServiceCollection AddEventsServiceBus(this IServiceCollection services,
         IConfiguration configuration,
         ISerializer serializer,
         string sectionKey,
@@ -36,7 +45,17 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AdderviceBusFromTokenCredential(this IServiceCollection services,
+    /// <summary>
+    /// Extension method to configure IEventPublisher contract with ServiceBusPublisher with TokenCredential options to connect to ServiceBus
+    /// </summary>
+    /// <param name="services">the ServiceCollection</param>
+    /// <param name="configuration">the Configuration used to bind and configure the options</param>
+    /// <param name="serializer">the serializer to be use</param>
+    /// <param name="sectionKey">the configuration section key to get the options</param>
+    /// <param name="tokenCredential">the TokenCredential instance</param>
+    /// <param name="busOptions">the ServiceBus options for extra configuration</param>
+    /// <returns>IServiceCollection</returns>
+    public static IServiceCollection AddEventsServiceBus(this IServiceCollection services,
         IConfiguration configuration,
         ISerializer serializer,
         string sectionKey,

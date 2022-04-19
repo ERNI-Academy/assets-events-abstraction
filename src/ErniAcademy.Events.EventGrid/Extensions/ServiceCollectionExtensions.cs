@@ -12,7 +12,15 @@ namespace ErniAcademy.Events.EventGrid.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddEventGridFromKey(this IServiceCollection services,
+    /// <summary>
+    /// Extension method to configure IEventPublisher contract with EventGridPublisher by default will use connection string options to connect to EventGrid
+    /// </summary>
+    /// <param name="services">the ServiceCollection</param>
+    /// <param name="configuration">the Configuration used to bind and configure the options</param>
+    /// <param name="serializer">the serializer to be use</param>
+    /// <param name="sectionKey">the configuration section key to get the options</param>
+    /// <returns>IServiceCollection</returns>
+    public static IServiceCollection AddEventsEventGrid(this IServiceCollection services,
         IConfiguration configuration,
         ISerializer serializer,
         string sectionKey)
@@ -38,7 +46,16 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddEventGridFromTokenCredential(this IServiceCollection services,
+    /// <summary>
+    /// Extension method to configure IEventPublisher contract with EventGridPublisher with TokenCredential options to connect to EventGrid
+    /// </summary>
+    /// <param name="services">the ServiceCollection</param>
+    /// <param name="configuration">the Configuration used to bind and configure the options</param>
+    /// <param name="serializer">the serializer to be use</param>
+    /// <param name="sectionKey">the configuration section key to get the options</param>
+    /// <param name="tokenCredential">the TokenCredential instance</param>
+    /// <returns>IServiceCollection</returns>
+    public static IServiceCollection AddEventsEventGrid(this IServiceCollection services,
         IConfiguration configuration,        
         ISerializer serializer, 
         string sectionKey,
