@@ -62,6 +62,11 @@ public static class ServiceCollectionExtensions
         TokenCredential tokenCredential,
         ServiceBusClientOptions busOptions = null)
     {
+        if (tokenCredential == null)
+        {
+            throw new ArgumentNullException(nameof(tokenCredential));
+        }
+
         services.AddOptions<FullyQualifiedNamespaceOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
 
         services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
