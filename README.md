@@ -1,5 +1,5 @@
 # About Events Abstraction
- Define a contract and many implementations for working with many technologies for publish events
+ Define a contract and many implementations (Azure EventGrid, Azure ServiceBus, Azure Storage Queues, Azure Redis) for publish events
 
 ERNI Academy StarterKit, PoC, or Gidelines. This is an about description of your repository.
 
@@ -13,6 +13,7 @@ This section should list any major frameworks that you built your project using.
 
 - [.Net 6.0](https://docs.microsoft.com/en-us/dotnet/core/whats-new/dotnet-6)
 - [c# 11](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-11)
+- [assets-serializers-abstraction (refereced as git submodule)](https://github.com/ERNI-Academy/assets-serializers-abstraction)
 
 ## Features
 
@@ -34,8 +35,10 @@ Installation instructions Events Abstraction by running:
 1. Clone the repo
 
 ```sh
-git clone https://github.com/ERNI-Academy/assets-events-abstraction
+git clone --recurse-submodules https://github.com/ERNI-Academy/assets-events-abstraction.git
 ```
+
+2. Basic use
 
 ```c#
 class MyEvent : EventBase
@@ -45,13 +48,51 @@ class MyEvent : EventBase
 
 var @event = new MyEvent { MyCustomProperty = "hi" };
 
- //you can choose between many impl
- IEventPublisher publisher = new ErniAcademy.Events.XXXX();
- IEventPublisher publisher = new ErniAcademy.Events.YYYY();
- IEventPublisher publisher = new ErniAcademy.Events.ZZZZ();
+//you can choose between many impl
+IEventPublisher publisher = new ErniAcademy.Events.EventGrid.EventGridPublisher();
+IEventPublisher publisher = new ErniAcademy.Events.Redis.RedisPublisher();
+IEventPublisher publisher = new ErniAcademy.Events.ServiceBus.ServiceBusPublisher();
+IEventPublisher publisher = new ErniAcademy.Events.StorageQueues.StorageQueuePublisher();
 
- //just publish your event
- await publisher.PublishAsync(@event);
+//just publish your event 
+await publisher.PublishAsync(@event);
+```
+
+3. Depency injection (ServiceCollection) use
+
+```c#
+class MyEvent : EventBase
+{
+	public string MyCustomProperty { get; set; }
+}
+
+//when configuring your ServiceCollection use the extension methods defined in each library for easy of use. This sample is provided with no arguments, take a look on the extensions to see the rest of the arguments, like IConfiguration, ISerializer etc.
+services.AddEventsEventGrid();
+services.AddEventsRedis();
+services.AddEventsServiceBus();
+services.AddEventsStorageQueues();
+
+//then just inject IEventPublisher directly in your classes
+
+class MyService
+{
+  private readonly IEventPublisher _publisher;
+
+  public MyService(IEventPublisher publisher)
+  {
+    _publisher = publisher;
+  }
+
+  public async Task SomeMethod()
+  {
+      //... some logic
+      
+      var @event = new MyEvent { MyCustomProperty = "hi" };
+
+      //just publish your event 
+      await _publisher.PublishAsync(@event);
+  }
+}
 ```
 
 ## Contributing
