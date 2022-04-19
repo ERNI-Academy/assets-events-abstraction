@@ -31,10 +31,5 @@
 			<_Parameter1>ErniAcademy.Events.EventGrid.UnitTests</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-			<_Parameter1>ErniAcademy.Events.IntegrationTests</_Parameter1>
-		</AssemblyAttribute>
-	</ItemGroup>
 
 </Project>

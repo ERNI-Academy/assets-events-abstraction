@@ -26,11 +26,6 @@
 			<_Parameter1>ErniAcademy.Events.ServiceBus.UnitTests</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-			<_Parameter1>ErniAcademy.Events.IntegrationTests</_Parameter1>
-		</AssemblyAttribute>
-	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\assets-serializers-abstraction\src\ErniAcademy.Serializers.Contracts\ErniAcademy.Serializers.Contracts.csproj" />
