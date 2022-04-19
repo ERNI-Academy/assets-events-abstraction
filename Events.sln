@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErniAcademy.Events.StorageQ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErniAcademy.Events.StorageQueues.UnitTests", "tests\ErniAcademy.Events.StorageQueues.UnitTests\ErniAcademy.Events.StorageQueues.UnitTests.csproj", "{DAF10578-B0A2-4604-BEEB-A7F01CE41553}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErniAcademy.Events.Redis.UnitTests", "tests\ErniAcademy.Events.Redis.UnitTests\ErniAcademy.Events.Redis.UnitTests.csproj", "{00757785-94D8-4F20-9855-D3A1B4992A17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,10 @@ Global
 		{DAF10578-B0A2-4604-BEEB-A7F01CE41553}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAF10578-B0A2-4604-BEEB-A7F01CE41553}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAF10578-B0A2-4604-BEEB-A7F01CE41553}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00757785-94D8-4F20-9855-D3A1B4992A17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00757785-94D8-4F20-9855-D3A1B4992A17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00757785-94D8-4F20-9855-D3A1B4992A17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00757785-94D8-4F20-9855-D3A1B4992A17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,6 +131,7 @@ Global
 		{DE2FE582-3335-4BC7-870B-B2BCEB6F8E3D} = {2D2DF22D-D0CE-4606-9E05-C323A911E0D9}
 		{D2A3B2EB-31C7-4C42-8B10-880FDD5A7E06} = {2D2DF22D-D0CE-4606-9E05-C323A911E0D9}
 		{DAF10578-B0A2-4604-BEEB-A7F01CE41553} = {E9BEC824-50B2-4246-9250-636486A70721}
+		{00757785-94D8-4F20-9855-D3A1B4992A17} = {E9BEC824-50B2-4246-9250-636486A70721}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A45AECB9-C582-41C2-B1B2-E1F1684488D5}
