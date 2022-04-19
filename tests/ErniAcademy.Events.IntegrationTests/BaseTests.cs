@@ -59,5 +59,26 @@ namespace ErniAcademy.Events.IntegrationTests
 
             actual.Should().BeEquivalentTo(@event);
         }
+
+        [Fact]
+        public virtual async Task Publish_events_should_be_received_by_a_consumer()
+        {
+            //Arrange
+            var @events = new[] 
+            {
+                new DummyEvent
+                {
+                    Title = "Integration test event " + Guid.NewGuid()
+                } 
+            };
+
+            //Act
+            await _sut.PublishAsync(@events);
+
+            //Assert
+            var actual = await WaitForReceive();
+
+            actual.Should().BeEquivalentTo(@events[0]);
+        }
     }
 }
