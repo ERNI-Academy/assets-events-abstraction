@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.ServiceBus.Configuration;
 using ErniAcademy.Events.ServiceBus.Extensions;
 using ErniAcademy.Serializers.Contracts;
@@ -13,19 +14,20 @@ namespace ErniAcademy.Events.IntegrationTests;
 
 public class ServiceBusTests : BaseTests
 {
-    private readonly ServiceBusProcessor _processor;
+    private readonly IEventSubscriber<DummyEvent> _subscriber;
     private readonly ISerializer _serializer = new JsonSerializer();
 
     public ServiceBusTests()
     {
         var options = _provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>();
         ServiceBusClient client = new ServiceBusClient(options.CurrentValue.ConnectionString);
-        _processor = client.CreateProcessor("dummyevent", "testprocessor", new ServiceBusProcessorOptions());
+        _subscriber = _provider.GetRequiredService<IEventSubscriber<DummyEvent>>();
     }
 
     protected override IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration)
     {
         services.AddEventsServiceBus(configuration, _serializer, sectionKey: "Events:ServiceBus");
+        services.AddEventsSubscriberTopicServiceBus<DummyEvent>(configuration, _serializer, sectionKey: "Events:ServiceBus", subscriptionName: "testprocessor");
         return services;
     }
 
@@ -33,21 +35,12 @@ public class ServiceBusTests : BaseTests
     {
         DummyEvent result = default(DummyEvent);
 
-        _processor.ProcessMessageAsync += async args =>
-        {
-            var body = args.Message.Body.ToString();
-            await args.CompleteMessageAsync(args.Message);
-            result = _serializer.DeserializeFromString<DummyEvent>(body);
-        };
-
-        _processor.ProcessErrorAsync += args => { throw args.Exception; };
-
-        await _processor.StartProcessingAsync();
-
+        await _subscriber.SubscribeAsync((e) => { result = e; return Task.CompletedTask; });
+        await _subscriber.StarProcessingAsync();
+        
         await Task.Delay(TimeSpan.FromSeconds(5));
 
-        await _processor.StopProcessingAsync();
-        await _processor.DisposeAsync();
+        await _subscriber.StopProcessingAsync();
 
         return result;
     }

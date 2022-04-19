@@ -3,6 +3,7 @@ using Azure.Messaging.ServiceBus;
 using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.ServiceBus.ClientProvider;
 using ErniAcademy.Events.ServiceBus.Configuration;
+using ErniAcademy.Events.ServiceBus.ProcessorProvider;
 using ErniAcademy.Serializers.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,9 +36,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IEventPublisher>(provider =>
         {
             var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
-            var serviceBusClientProvider = new ConnectionStringProvider(
-                provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(),
-                busOptions);
+            var serviceBusClientProvider = new ConnectionStringProvider(provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(), busOptions);
 
             return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
         });
@@ -74,12 +73,58 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IEventPublisher>(provider =>
         {
             var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
-            var serviceBusClientProvider = new TokenCredentialProvider(
-                provider.GetRequiredService<IOptionsMonitor<FullyQualifiedNamespaceOptions>>(),
-                tokenCredential,
-                busOptions);
+            var serviceBusClientProvider = new TokenCredentialProvider(provider.GetRequiredService<IOptionsMonitor<FullyQualifiedNamespaceOptions>>(), tokenCredential, busOptions);
 
             return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddEventsSubscriberQueueServiceBus<TEvent>(this IServiceCollection services,
+        IConfiguration configuration,
+        ISerializer serializer,
+        string sectionKey,
+        ServiceBusClientOptions busOptions = null,
+        ServiceBusProcessorOptions busProcessorOptions = null)
+        where TEvent : class, IEvent, new()
+    {
+        services.AddOptions<ConnectionStringOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
+
+        services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+
+        services.TryAddSingleton<IEventSubscriber<TEvent>>(provider =>
+        {
+            var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
+            var serviceBusClientProvider = new ConnectionStringProvider(provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(), busOptions);
+            var serviceBusProcessorProvider = new QueueProvider(serviceBusClientProvider, busProcessorOptions);
+
+            return new ServiceBusSubscriber<TEvent>(serviceBusProcessorProvider, eventNameResolver, serializer);
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddEventsSubscriberTopicServiceBus<TEvent>(this IServiceCollection services,
+        IConfiguration configuration,
+        ISerializer serializer,
+        string sectionKey,
+        string subscriptionName,
+        ServiceBusClientOptions busOptions = null,
+        ServiceBusProcessorOptions busProcessorOptions = null)
+        where TEvent : class, IEvent, new()
+    {
+        services.AddOptions<ConnectionStringOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
+        
+        services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+
+        services.TryAddSingleton<IEventSubscriber<TEvent>>(provider =>
+        {
+            var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
+            var serviceBusClientProvider = new ConnectionStringProvider(provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(), busOptions);
+            var serviceBusProcessorProvider = new TopicProvider(serviceBusClientProvider, subscriptionName, busProcessorOptions);
+
+            return new ServiceBusSubscriber<TEvent>(serviceBusProcessorProvider, eventNameResolver, serializer);
         });
 
         return services;
