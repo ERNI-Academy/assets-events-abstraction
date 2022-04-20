@@ -10,6 +10,11 @@ namespace ErniAcademy.Events.Samples;
 
 public static class SampleConfiguration
 {
+    /// <summary>
+    /// this is a sample of how you can configure ServiceBus pub/sub, so later you can use dependency injection
+    /// </summary>
+    /// <param name="services">your service collection</param>
+    /// <param name="configuration">your configuration</param>
     public static void ConfigureServiceBus(IServiceCollection services, IConfiguration configuration)
     {
         ISerializer serializer = new JsonSerializer(); //please note that ISerializer serializer is not in the IoC thats why it may be the case that you want diferents serializers impl within your app
@@ -24,6 +29,11 @@ public static class SampleConfiguration
         services.AddEventsSubscriberTopicServiceBus<MyEvent>(configuration, serializer, sectionKey: "Events:ServiceBus", subscriptionName: "[your topic subscription name]");
     }
 
+    /// <summary>
+    /// this is a sample of how you can configure StorageQueues pub/sub, so later you can use dependency injection
+    /// </summary>
+    /// <param name="services">your service collection</param>
+    /// <param name="configuration">your configuration</param>
     public static void ConfigureStorageQueues(IServiceCollection services, IConfiguration configuration)
     {
         ISerializer serializer = new JsonSerializer(); //please note that ISerializer serializer is not in the IoC thats why it may be the case that you want diferents serializers impl within your app
@@ -37,6 +47,11 @@ public static class SampleConfiguration
         services.AddEventsSubscriberStorageQueues<MyEvent>(configuration, serializer, sectionKey: "Events:StorageQueues");
     }
 
+    /// <summary>
+    /// this is a sample of how you can configure Redis pub/sub, so later you can use dependency injection
+    /// </summary>
+    /// <param name="services">your service collection</param>
+    /// <param name="configuration">your configuration</param>
     public static void ConfigureRedis(IServiceCollection services, IConfiguration configuration)
     {
         ISerializer serializer = new JsonSerializer(); //please note that ISerializer serializer is not in the IoC thats why it may be the case that you want diferents serializers impl within your app

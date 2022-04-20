@@ -13,9 +13,19 @@ var configuration = new ConfigurationBuilder()
 services.AddSingleton<SampleEventProducer>();
 services.AddSingleton<SampleEventProcessor>();
 
-SampleConfiguration.ConfigureServiceBus(services, configuration);
-//SampleConfiguration.ConfigureRedis(services, configuration);
-//SampleConfiguration.ConfigureStorageQueues(services, configuration);
+Console.WriteLine("type '1' for ServiceBus");
+Console.WriteLine("type '2' for Redis");
+Console.WriteLine("type '3' for StorageQueues");
+
+var line = Console.ReadLine();
+
+switch (line)
+{
+    case "1": { SampleConfiguration.ConfigureServiceBus(services, configuration); break; }
+    case "2": { SampleConfiguration.ConfigureRedis(services, configuration); break; }
+    case "3": { SampleConfiguration.ConfigureStorageQueues(services, configuration); break; }
+    default: { Console.WriteLine($"invalid type {line}"); break; }
+}
 
 var provider = services.BuildServiceProvider();
 
