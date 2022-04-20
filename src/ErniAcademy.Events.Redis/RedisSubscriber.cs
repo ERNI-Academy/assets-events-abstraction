@@ -8,7 +8,7 @@ namespace ErniAcademy.Events.Redis;
 public class RedisSubscriber<TEvent> : IEventSubscriber<TEvent>
     where TEvent : class, IEvent, new()
 {
-    private Lazy<ChannelMessageQueue> _channelMessageQueueLazy;
+    private readonly Lazy<ChannelMessageQueue> _channelMessageQueueLazy;
     private readonly ISerializer _serializer;
     private readonly ConcurrentDictionary<string, Func<TEvent, Task>> _handlers;
 

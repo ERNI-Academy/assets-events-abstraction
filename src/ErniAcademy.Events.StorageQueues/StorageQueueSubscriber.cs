@@ -9,7 +9,7 @@ namespace ErniAcademy.Events.StorageQueues;
 public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
     where TEvent : class, IEvent, new()
 {
-    private Lazy<QueueClient> _queueClientLazy;
+    private readonly Lazy<QueueClient> _queueClientLazy;
     private readonly ISerializer _serializer;
     private bool _susbcribed = true;
 
