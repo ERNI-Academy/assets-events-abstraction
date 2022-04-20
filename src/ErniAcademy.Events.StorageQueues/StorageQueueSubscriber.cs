@@ -35,11 +35,11 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
 
     public Task StarProcessingAsync(CancellationToken cancellationToken = default)
     {
-        return Task.Run(async () => {
+        Task.Factory.StartNew(async () => {
             while (_susbcribed)
             {
                 var queueMessages = await _queueClientLazy.Value.ReceiveMessagesAsync(cancellationToken);
-                
+
                 foreach (var message in queueMessages.Value)
                 {
                     var @event = await _serializer.DeserializeFromStreamAsync<TEvent>(message.Body.ToStream(), cancellationToken);
@@ -50,7 +50,9 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
                     await _queueClientLazy.Value.DeleteMessageAsync(message.MessageId, message.PopReceipt, cancellationToken);
                 }
             }
-        });
+        }, TaskCreationOptions.LongRunning).ConfigureAwait(false);
+
+        return Task.CompletedTask;
     }
 
     public Task StopProcessingAsync(CancellationToken cancellationToken = default)
