@@ -18,7 +18,6 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release -o nuget
       shell: bash
-    # Skip for now. TODO Omar: enable this
-    #- name: Push  
-    #  run: dotnet nuget push "nuget/*.nupkg" --source "https://nuget.pkg.github.com/ERNI-Academy/index.json" --api-key ${{ secrets.PACKAGESTOKEN }} --skip-duplicate
-    #  shell: bash
+    - name: Push
+      run: dotnet nuget push "nuget/*.nupkg" --source "https://nuget.pkg.github.com/ERNI-Academy/index.json" --api-key ${{ secrets.PACKAGESTOKEN }} --skip-duplicate
+      shell: bash
