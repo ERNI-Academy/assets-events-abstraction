@@ -17,7 +17,7 @@ public class RedisPublisher : IEventPublisher
     {
         _serializer = serializer;
         _eventNameResolver = eventNameResolver;
-        _subscriberLazy = new Lazy<ISubscriber>(provider.Connection.GetSubscriber());
+        _subscriberLazy = new Lazy<ISubscriber>(() => provider.Connection.GetSubscriber());
     }
 
     public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)

@@ -8,10 +8,11 @@ namespace ErniAcademy.Events.StorageQueues;
 
 public class StorageQueuePublisher : IEventPublisher
 {
-    private readonly ConcurrentDictionary<string, QueueClient> _clients;
     private readonly IQueueClientProvider _queueClientProvider;
     private readonly IEventNameResolver _eventNameResolver;
     private readonly ISerializer _serializer;
+
+    private readonly ConcurrentDictionary<string, QueueClient> _clients;
 
     public StorageQueuePublisher(
         IQueueClientProvider queueClientProvider, 

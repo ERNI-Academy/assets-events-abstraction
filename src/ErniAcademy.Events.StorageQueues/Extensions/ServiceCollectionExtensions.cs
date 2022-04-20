@@ -34,11 +34,31 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IEventPublisher>(provider =>
         {
             var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
-            var queueClientProvider = new ConnectionStringProvider(
-                provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(),
-                queueOptions);
+            var queueClientProvider = new ConnectionStringProvider(provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(), queueOptions);
 
             return new StorageQueuePublisher(queueClientProvider, eventNameResolver, serializer);
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddEventsSubscriberStorageQueues<TEvent>(this IServiceCollection services,
+        IConfiguration configuration,
+        ISerializer serializer,
+        string sectionKey,
+        QueueClientOptions queueOptions = null)
+        where TEvent : class, IEvent, new()
+    {
+        services.AddOptions<ConnectionStringOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
+
+        services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
+
+        services.TryAddSingleton<IEventSubscriber<TEvent>>(provider =>
+        {
+            var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
+            var queueClientProvider = new ConnectionStringProvider(provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(), queueOptions);
+
+            return new StorageQueueSubscriber<TEvent>(queueClientProvider, eventNameResolver, serializer);
         });
 
         return services;
