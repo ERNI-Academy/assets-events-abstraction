@@ -7,7 +7,7 @@
 		<RepositoryType>git</RepositoryType>
 		<Authors>ErniAcademy</Authors>
 		<Company>Erni</Company>
-		<PackageDescription>Events Azure StorageQueues publisher</PackageDescription>
+		<PackageDescription>Events Azure StorageQueues publisher and subscriber</PackageDescription>
 		<PackageTags>Events Azure Storage Queue</PackageTags>
 		<VersionPrefix>1.0.0</VersionPrefix>
 	</PropertyGroup>
