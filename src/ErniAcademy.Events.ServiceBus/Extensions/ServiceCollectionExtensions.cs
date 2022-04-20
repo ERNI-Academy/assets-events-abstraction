@@ -102,6 +102,16 @@ public static class ServiceCollectionExtensions
         ServiceBusProcessorOptions busProcessorOptions = null)
         where TEvent : class, IEvent, new()
     {
+        if (subscriptionName == null)
+        { 
+            throw new ArgumentNullException(nameof(subscriptionName));
+        }
+
+        if (string.IsNullOrWhiteSpace(subscriptionName))
+        {
+            throw new ArgumentException(nameof(subscriptionName));
+        }
+
         services.AddOptions<ConnectionStringOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
         
         services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
