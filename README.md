@@ -1,5 +1,5 @@
 # About Events Abstraction
- Define a contract and many implementations (Azure EventGrid, Azure ServiceBus, Azure Storage Queues, Azure Redis) for publish events
+ Define a contract and many implementations (Azure EventGrid, Azure ServiceBus, Azure Storage Queues, Azure Redis) for publish and subscribe
 
 ERNI Academy StarterKit, PoC, or Gidelines. This is an about description of your repository.
 
@@ -17,7 +17,14 @@ This section should list any major frameworks that you built your project using.
 
 ## Features
 
+1. Publish
 - PublishAsync
+
+2. Subscribe
+- Subscribe
+- UnSubscribe
+- StarProcessingAsync
+- StopProcessingAsync
 
 ## Getting Started
 
@@ -38,7 +45,12 @@ Installation instructions Events Abstraction by running:
 git clone --recurse-submodules https://github.com/ERNI-Academy/assets-events-abstraction.git
 ```
 
-2. Basic use
+> `Important Note`  
+> All implementations heavly depends on Microsoft Options Pattern for configurations. See https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-6.0
+> So it is expected a proper configuration in order to work take a look at the samples to see how to configure each publisher/subscriber
+
+
+2. Publish Basic use
 
 ```c#
 class MyEvent : EventBase
@@ -49,16 +61,16 @@ class MyEvent : EventBase
 var @event = new MyEvent { MyCustomProperty = "hi" };
 
 //you can choose between many impl
-IEventPublisher publisher = new ErniAcademy.Events.EventGrid.EventGridPublisher();
-IEventPublisher publisher = new ErniAcademy.Events.Redis.RedisPublisher();
-IEventPublisher publisher = new ErniAcademy.Events.ServiceBus.ServiceBusPublisher();
-IEventPublisher publisher = new ErniAcademy.Events.StorageQueues.StorageQueuePublisher();
+IEventPublisher publisher = new ErniAcademy.Events.EventGrid.EventGridPublisher();//args ommited for simplicity
+IEventPublisher publisher = new ErniAcademy.Events.Redis.RedisPublisher();//args ommited for simplicity
+IEventPublisher publisher = new ErniAcademy.Events.ServiceBus.ServiceBusPublisher();//args ommited for simplicity
+IEventPublisher publisher = new ErniAcademy.Events.StorageQueues.StorageQueuePublisher();//args ommited for simplicity
 
 //just publish your event 
 await publisher.PublishAsync(@event);
 ```
 
-3. Depency injection (ServiceCollection) use
+3. Publish Depency injection (ServiceCollection)
 
 ```c#
 class MyEvent : EventBase
@@ -66,11 +78,12 @@ class MyEvent : EventBase
 	public string MyCustomProperty { get; set; }
 }
 
-//when configuring your ServiceCollection use the extension methods defined in each library for easy of use. This sample is provided with no arguments, take a look on the extensions to see the rest of the arguments, like IConfiguration, ISerializer etc.
-services.AddEventsEventGrid();
-services.AddEventsRedis();
-services.AddEventsServiceBus();
-services.AddEventsStorageQueues();
+//when configuring your ServiceCollection use the extension methods defined in each library for easy of use. 
+//This sample is provided with no arguments, take a look on the extensions to see the rest of the arguments, like IConfiguration, ISerializer etc.
+services.AddEventsPublisherEventGrid();//args ommited for simplicity
+services.AddEventsPublisherRedis();//args ommited for simplicity
+services.AddEventsPublisherServiceBus();//args ommited for simplicity
+services.AddEventsPublisherStorageQueues();//args ommited for simplicity
 
 //then just inject IEventPublisher directly in your classes
 
@@ -91,6 +104,79 @@ class MyService
 
       //just publish your event 
       await _publisher.PublishAsync(@event);
+  }
+}
+```
+
+4. Subscribe Basic use
+
+```c#
+class MyEvent : EventBase
+{
+	public string MyCustomProperty { get; set; }
+}
+
+//you can choose between many impl
+IEventPublisher subscriber = new ErniAcademy.Events.Redis.RedisSubscriber();//args ommited for simplicity
+IEventPublisher subscriber = new ErniAcademy.Events.ServiceBus.ServiceBusSubscriber();//args ommited for simplicity
+IEventPublisher subscriber = new ErniAcademy.Events.StorageQueues.StorageQueueSubscriber();//args ommited for simplicity
+
+//first subscribe to an @event by passing a handler to subscribe method
+subscriber.Subscribe<MyEvent>(MyProcessor);
+
+private Task MyProcessor(MyEvent @event)
+{
+//Process @event
+}
+
+//start processing events 
+await subscriber.StarProcessingAsync();
+
+//and when you are done
+await subscriber.StopProcessingAsync();
+
+```
+
+3. Subscribe Depency injection (ServiceCollection)
+
+```c#
+class MyEvent : EventBase
+{
+	public string MyCustomProperty { get; set; }
+}
+
+//when configuring your ServiceCollection use the extension methods defined in each library for easy of use. 
+//This sample is provided with no arguments, take a look on the extensions to see the rest of the arguments, like IConfiguration, ISerializer etc.
+services.AddEventsSubscriberRedis<MyEvent>();//args ommited for simplicity
+services.AddEventsSubscriberServiceBus<MyEvent>();//args ommited for simplicity
+services.AddEventsSubscriberStorageQueues<MyEvent>();//args ommited for simplicity
+
+//then just inject IEventPublisher directly in your classes
+
+class MyService
+{
+  private readonly IEventSubscriber<DummyEvent> _subscriber;
+
+  public MyService(IEventSubscriber<DummyEvent> subscriber)
+  {
+    _subscriber = subscriber;
+  }
+
+  public async Task SomeMethod()
+  {
+      //first subscribe to an @event by passing a handler to subscribe method
+      _subscriber.Subscribe<MyEvent>(MyProcessor);
+
+      //start processing events 
+      await _subscriber.StarProcessingAsync();
+
+      //and when you are done
+      await _subscriber.StopProcessingAsync();
+  }
+
+  private Task MyProcessor(MyEvent @event)
+  {
+  //Process @event
   }
 }
 ```
