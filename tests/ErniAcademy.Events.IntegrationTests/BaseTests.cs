@@ -50,7 +50,11 @@ public abstract class BaseTests
 
         DummyEvent publishedEvent = null;
 
-        _subscriber.Subscribe((e) => { publishedEvent = e; return Task.CompletedTask; });
+        _subscriber.Subscribe((e) => { 
+            publishedEvent = e; 
+            return Task.CompletedTask; 
+        });
+
         await _subscriber.StarProcessingAsync();
 
         //Act
@@ -76,9 +80,13 @@ public abstract class BaseTests
             } 
         };
 
-        List<DummyEvent> publishedEvents = null;
+        var publishedEvents = new List<DummyEvent>();
 
-        _subscriber.Subscribe((e) => { publishedEvents.Add(e); return Task.CompletedTask; });
+        _subscriber.Subscribe((e) => { 
+            publishedEvents.Add(e); 
+            return Task.CompletedTask; 
+        });
+
         await _subscriber.StarProcessingAsync();
 
         //Act
