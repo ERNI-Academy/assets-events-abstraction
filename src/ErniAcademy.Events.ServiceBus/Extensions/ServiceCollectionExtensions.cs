@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Azure.Messaging.ServiceBus;
+﻿using Azure.Messaging.ServiceBus;
 using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.ServiceBus.ClientProvider;
 using ErniAcademy.Events.ServiceBus.Configuration;
@@ -15,7 +14,8 @@ namespace ErniAcademy.Events.ServiceBus.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Extension method to configure IEventPublisher contract with ServiceBusPublisher by default will use connection string options to connect to ServiceBus
+    /// Extension method to configure IEventPublisher contract with ServiceBusPublisher by default will use connection string options
+    /// to connect to ServiceBus, make sure ConnectionString of ServiceBus is configure in the configuration section.
     /// </summary>
     /// <param name="services">the ServiceCollection</param>
     /// <param name="configuration">the Configuration used to bind and configure the options</param>
@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
     /// <param name="sectionKey">the configuration section key to get the options</param>
     /// <param name="busOptions">the ServiceBus options for extra configuration</param>
     /// <returns>IServiceCollection</returns>
-    public static IServiceCollection AddEventsServiceBus(this IServiceCollection services,
+    public static IServiceCollection AddEventsPublisherServiceBus(this IServiceCollection services,
         IConfiguration configuration,
         ISerializer serializer,
         string sectionKey,
@@ -45,42 +45,17 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Extension method to configure IEventPublisher contract with ServiceBusPublisher with TokenCredential options to connect to ServiceBus
+    /// Extension method to configure IEventSubscriber<TEvent> contract with ServiceBusSubscriber<TEvent> for ServiceBus Queues by default will use connection string options
+    /// to connect to ServiceBus, make sure ConnectionString of ServiceBus is configure in the configuration section.
     /// </summary>
+    /// <typeparam name="TEvent">The generic event type to be subscribed</typeparam>
     /// <param name="services">the ServiceCollection</param>
     /// <param name="configuration">the Configuration used to bind and configure the options</param>
     /// <param name="serializer">the serializer to be use</param>
     /// <param name="sectionKey">the configuration section key to get the options</param>
-    /// <param name="tokenCredential">the TokenCredential instance</param>
     /// <param name="busOptions">the ServiceBus options for extra configuration</param>
+    /// <param name="busProcessorOptions">The set of Azure.Messaging.ServiceBus.ServiceBusProcessorOptions to use for configuring the Azure.Messaging.ServiceBus.ServiceBusProcessor.</param>
     /// <returns>IServiceCollection</returns>
-    public static IServiceCollection AddEventsServiceBus(this IServiceCollection services,
-        IConfiguration configuration,
-        ISerializer serializer,
-        string sectionKey,
-        TokenCredential tokenCredential,
-        ServiceBusClientOptions busOptions = null)
-    {
-        if (tokenCredential == null)
-        {
-            throw new ArgumentNullException(nameof(tokenCredential));
-        }
-
-        services.AddOptions<FullyQualifiedNamespaceOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
-
-        services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
-
-        services.TryAddSingleton<IEventPublisher>(provider =>
-        {
-            var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
-            var serviceBusClientProvider = new TokenCredentialProvider(provider.GetRequiredService<IOptionsMonitor<FullyQualifiedNamespaceOptions>>(), tokenCredential, busOptions);
-
-            return new ServiceBusPublisher(serviceBusClientProvider, eventNameResolver, serializer);
-        });
-
-        return services;
-    }
-
     public static IServiceCollection AddEventsSubscriberQueueServiceBus<TEvent>(this IServiceCollection services,
         IConfiguration configuration,
         ISerializer serializer,
@@ -105,6 +80,19 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// Extension method to configure IEventSubscriber<TEvent> contract with ServiceBusSubscriber<TEvent> for ServiceBus Topics by default will use connection string options
+    /// to connect to ServiceBus, make sure ConnectionString of ServiceBus is configure in the configuration section.
+    /// </summary>
+    /// <typeparam name="TEvent">The generic event type to be subscribed</typeparam>
+    /// <param name="services">the ServiceCollection</param>
+    /// <param name="configuration">the Configuration used to bind and configure the options</param>
+    /// <param name="serializer">the serializer to be use</param>
+    /// <param name="sectionKey">the configuration section key to get the options</param>
+    /// <param name="subscriptionName">the topic subscription name</param>
+    /// <param name="busOptions">the ServiceBus options for extra configuration</param>
+    /// <param name="busProcessorOptions">The set of Azure.Messaging.ServiceBus.ServiceBusProcessorOptions to use for configuring the Azure.Messaging.ServiceBus.ServiceBusProcessor.</param>
+    /// <returns>IServiceCollection</returns>
     public static IServiceCollection AddEventsSubscriberTopicServiceBus<TEvent>(this IServiceCollection services,
         IConfiguration configuration,
         ISerializer serializer,

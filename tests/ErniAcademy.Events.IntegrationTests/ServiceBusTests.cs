@@ -8,7 +8,7 @@ public class ServiceBusTests : BaseTests
 {
     protected override IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddEventsServiceBus(configuration, _serializer, sectionKey: "Events:ServiceBus");
+        services.AddEventsPublisherServiceBus(configuration, _serializer, sectionKey: "Events:ServiceBus");
         services.AddEventsSubscriberTopicServiceBus<DummyEvent>(configuration, _serializer, sectionKey: "Events:ServiceBus", subscriptionName: "testprocessor");
         return services;
     }

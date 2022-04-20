@@ -10,14 +10,15 @@ namespace ErniAcademy.Events.Redis.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Extension method to configure IEventPublisher contract with RedisPublisher by default will use connection string options to connect to Redis database
+    /// Extension method to configure IEventPublisher contract with RedisPublisher by default will use connection string options 
+    /// to connect to Redis database, make sure ConnectionString of Redis is configure in the configuration section.
     /// </summary>
     /// <param name="services">the ServiceCollection</param>
     /// <param name="configuration">the Configuration used to bind and configure the options</param>
     /// <param name="serializer">the serializer to be use</param>
     /// <param name="sectionKey">the configuration section key to get the options</param>
     /// <returns>IServiceCollection</returns>
-    public static IServiceCollection AddEventsRedis(this IServiceCollection services,
+    public static IServiceCollection AddEventsPublisherRedis(this IServiceCollection services,
         IConfiguration configuration,
         ISerializer serializer,
         string sectionKey)
@@ -38,6 +39,16 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// Extension method to configure IEventSubscriber<TEvent> contract with RedisSubscriber<TEvent> by default will use connection string options
+    /// to connect to Redis database, make sure ConnectionString of Redis is configure in the configuration section.
+    /// </summary>
+    /// <typeparam name="TEvent">The generic event type to be subscribed</typeparam>
+    /// <param name="services">the ServiceCollection</param>
+    /// <param name="configuration">the Configuration used to bind and configure the options</param>
+    /// <param name="serializer">the serializer to be use</param>
+    /// <param name="sectionKey">the configuration section key to get the options</param>
+    /// <returns>IServiceCollection</returns>
     public static IServiceCollection AddEventsSubscriberRedis<TEvent>(this IServiceCollection services,
         IConfiguration configuration,
         ISerializer serializer,

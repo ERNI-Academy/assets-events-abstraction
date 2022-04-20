@@ -8,7 +8,7 @@ public class StorageQueueTests : BaseTests
 {
     protected override IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddEventsStorageQueues(configuration, _serializer, sectionKey: "Events:StorageQueues");
+        services.AddEventsPublisherStorageQueues(configuration, _serializer, sectionKey: "Events:StorageQueues");
         services.AddEventsSubscriberStorageQueues<DummyEvent>(configuration, _serializer, sectionKey: "Events:StorageQueues");
         return services;
     }

@@ -13,11 +13,11 @@ using Xunit;
 
 namespace ErniAcademy.Events.EventGrid.UnitTests.ServiceCollectionExtensionsTests;
 
-public class AddEventsEventGrid
+public class AddEventsPublisherEventGrid
 {
     private readonly ISerializer _serializer;
 
-    public AddEventsEventGrid()
+    public AddEventsPublisherEventGrid()
     {
         _serializer = Substitute.For<ISerializer>();
     }
@@ -34,29 +34,7 @@ public class AddEventsEventGrid
                 }).Build();
 
         var services = new ServiceCollection();
-        services.AddEventsEventGrid(configuration, _serializer, "EventGrid");
-        var provider = services.BuildServiceProvider();
-
-        //Act
-        var actual = provider.GetRequiredService<IEventPublisher>();
-
-        //Assert
-        actual.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void With_valid_tokenCredentials_options_section_Should_configure_IEventPublisher_with_EventGridPublisher_impl()
-    {
-        //Arrange
-        var configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new KeyValuePair<string, string>[]{
-                    new KeyValuePair<string, string>("EventGrid:Endpoint", "https://test.eventgrid.com/"),
-                }).Build();
-
-        TokenCredential tokenCredential = Substitute.For<TokenCredential>();
-
-        var services = new ServiceCollection();
-        services.AddEventsEventGrid(configuration, _serializer, "EventGrid", tokenCredential);
+        services.AddEventsPublisherEventGrid(configuration, _serializer, "EventGrid");
         var provider = services.BuildServiceProvider();
 
         //Act
@@ -80,7 +58,7 @@ public class AddEventsEventGrid
                 }).Build();
 
         var services = new ServiceCollection();
-        services.AddEventsEventGrid(configuration, _serializer, "EventGrid");
+        services.AddEventsPublisherEventGrid(configuration, _serializer, "EventGrid");
         var provider = services.BuildServiceProvider();
 
         //Act
@@ -104,7 +82,7 @@ public class AddEventsEventGrid
                 }).Build();
 
         var services = new ServiceCollection();
-        services.AddEventsEventGrid(configuration, _serializer, "EventGrid");
+        services.AddEventsPublisherEventGrid(configuration, _serializer, "EventGrid");
         var provider = services.BuildServiceProvider();
 
         //Act
@@ -128,7 +106,7 @@ public class AddEventsEventGrid
                 }).Build();
 
         var services = new ServiceCollection();
-        services.AddEventsEventGrid(configuration, _serializer, "EventGrid");
+        services.AddEventsPublisherEventGrid(configuration, _serializer, "EventGrid");
         var provider = services.BuildServiceProvider();
 
         //Act
@@ -137,26 +115,5 @@ public class AddEventsEventGrid
         //Assert
         var error = actual.Should().Throw<InvalidOperationException>();
         error.Which.Message.Should().Contain("This operation is not supported for a relative URI");
-    }
-
-    [Fact]
-    public void With_null_tokenCredential_section_Throws_ArgumentNullException()
-    {
-        //Arrange
-        var configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new KeyValuePair<string, string>[]{
-                    new KeyValuePair<string, string>("EventGrid:Key", "testkey")
-                }).Build();
-
-        TokenCredential tokenCredential = null;
-
-        var services = new ServiceCollection();
-
-        //Act
-        var actual = () => services.AddEventsEventGrid(configuration, _serializer, "EventGrid", tokenCredential);
-
-        //Assert
-        var error = actual.Should().Throw<ArgumentNullException>();
-        error.Which.Message.Should().Contain("Value cannot be null. (Parameter 'tokenCredential')");
     }
 }

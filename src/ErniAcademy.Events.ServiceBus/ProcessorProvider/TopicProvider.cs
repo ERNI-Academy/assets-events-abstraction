@@ -3,6 +3,9 @@ using ErniAcademy.Events.ServiceBus.ClientProvider;
 
 namespace ErniAcademy.Events.ServiceBus.ProcessorProvider;
 
+/// <summary>
+/// Provider to build a ServiceBusProcessor for ServiceBus topics
+/// </summary>
 public class TopicProvider : IServiceBusProcessorProvider
 {
     private readonly IServiceBusClientProvider _serviceBusClientProvider;

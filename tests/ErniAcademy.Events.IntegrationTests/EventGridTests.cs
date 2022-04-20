@@ -29,7 +29,7 @@ public class EventGridTests
         var configuration = ConfigurationHelper.Get();
         services.AddSingleton<IConfiguration>(configuration);
 
-        services.AddEventsEventGrid(configuration, _serializer, sectionKey: "Events:EventGrid");
+        services.AddEventsPublisherEventGrid(configuration, _serializer, sectionKey: "Events:EventGrid");
         services.AddOptions<QueueOptions>().Bind(configuration.GetSection("Events:EventGrid")).ValidateDataAnnotations();
 
         var provider = services.BuildServiceProvider();
