@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using ErniAcademy.Events.Contracts;
+﻿using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.ServiceBus.Extensions;
 using ErniAcademy.Serializers.Contracts;
 using FluentAssertions;
@@ -13,11 +12,11 @@ using Xunit;
 
 namespace ErniAcademy.Events.ServiceBus.UnitTests.ServiceCollectionExtensionsTests;
 
-public class AddEventsServiceBus
+public class AddEventsSubscriberTopicServiceBus
 {
     private readonly ISerializer _serializer;
 
-    public AddEventsServiceBus()
+    public AddEventsSubscriberTopicServiceBus()
     {
         _serializer = Substitute.For<ISerializer>();
     }
@@ -31,34 +30,14 @@ public class AddEventsServiceBus
                     new KeyValuePair<string, string>("ServiceBus:ConnectionString", "Endpoint=sb://mock.servicebus.windows.net/;SharedAccessKeyName=mock;SharedAccessKey=MOCK+iWHbYV80ToXyikgi9eGJpQg7Hb7hOj+ejl1Zgjs="),
                 }).Build();
 
+        string subscriptionName = "test";
+
         var services = new ServiceCollection();
-        services.AddEventsServiceBus(configuration, _serializer, "ServiceBus");
+        services.AddEventsSubscriberTopicServiceBus<DummyEvent>(configuration, _serializer, "ServiceBus", subscriptionName);
         var provider = services.BuildServiceProvider();
 
         //Act
-        var actual = provider.GetRequiredService<IEventPublisher>();
-
-        //Assert
-        actual.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void With_valid_tokenCredentials_options_section_Should_configure_IEventPublisher_with_ServiceBusPublisher_impl()
-    {
-        //Arrange
-        var configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new KeyValuePair<string, string>[]{
-                    new KeyValuePair<string, string>("ServiceBus:FullyQualifiedNamespace", "mock.servicebus.windows.net"),
-                }).Build();
-
-        TokenCredential tokenCredential = Substitute.For<TokenCredential>();
-
-        var services = new ServiceCollection();
-        services.AddEventsServiceBus(configuration, _serializer, "ServiceBus", tokenCredential);
-        var provider = services.BuildServiceProvider();
-
-        //Act
-        var actual = provider.GetRequiredService<IEventPublisher>();
+        var actual = provider.GetRequiredService<IEventSubscriber<DummyEvent>>();
 
         //Assert
         actual.Should().NotBeNull();
@@ -71,17 +50,19 @@ public class AddEventsServiceBus
     public void With_wrong_connectionstring_options_section_Throws_OptionsValidationException(string key, string value)
     {
         //Arrange
+        string subscriptionName = "test";
+
         var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new KeyValuePair<string, string>[]{
                     new KeyValuePair<string, string>(key, value)
                 }).Build();
 
         var services = new ServiceCollection();
-        services.AddEventsServiceBus(configuration, _serializer, "ServiceBus");
+        services.AddEventsSubscriberTopicServiceBus<DummyEvent>(configuration, _serializer, "ServiceBus", subscriptionName);
         var provider = services.BuildServiceProvider();
 
         //Act
-        var actual = () => provider.GetRequiredService<IEventPublisher>();
+        var actual = () => provider.GetRequiredService<IEventSubscriber<DummyEvent>>();
 
         //Assert
         var error = actual.Should().Throw<OptionsValidationException>();
@@ -89,49 +70,50 @@ public class AddEventsServiceBus
     }
 
     [Fact]
-    public void With_null_tokenCredential_section_Throws_ArgumentNullException()
+    public void With_null_subscriptionName_options_section_Throws_ArgumentNullException()
     {
         //Arrange
+        string subscriptionName = null;
+
         var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new KeyValuePair<string, string>[]{
-                    new KeyValuePair<string, string>("ServiceBus:Key", "testkey")
+                    new KeyValuePair<string, string>("ServiceBus:ConnectionString", "Endpoint=sb://mock.servicebus.windows.net/;SharedAccessKeyName=mock;SharedAccessKey=MOCK+iWHbYV80ToXyikgi9eGJpQg7Hb7hOj+ejl1Zgjs="),
                 }).Build();
-
-        TokenCredential tokenCredential = null;
 
         var services = new ServiceCollection();
 
-        //Act
-        var actual = () => services.AddEventsServiceBus(configuration, _serializer, "ServiceBus", tokenCredential);
-
-        //Assert
-        var error = actual.Should().Throw<ArgumentNullException>();
-        error.Which.Message.Should().Contain("Value cannot be null. (Parameter 'tokenCredential')");
-    }
-
-    [Theory]
-    [InlineData("ServiceBus:FullyQualifiedNamespace", "")]
-    [InlineData("ServiceBus:FullyQualifiedNamespace", "  ")]
-    [InlineData("ServiceBus:FullyQualifiedNamespace", null)]
-    public void With_wrong_fullyqualifiednamespace_options_section_Throws_OptionsValidationException(string key, string value)
-    {
-        //Arrange
-        var configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new KeyValuePair<string, string>[]{
-                    new KeyValuePair<string, string>(key, value)
-                }).Build();
-
-        TokenCredential tokenCredential = Substitute.For<TokenCredential>();
-
-        var services = new ServiceCollection();
-        services.AddEventsServiceBus(configuration, _serializer, "ServiceBus", tokenCredential);
         var provider = services.BuildServiceProvider();
 
         //Act
-        var actual = () => provider.GetRequiredService<IEventPublisher>();
+        var actual = () => services.AddEventsSubscriberTopicServiceBus<DummyEvent>(configuration, _serializer, "ServiceBus", subscriptionName); ;
 
         //Assert
-        var error = actual.Should().Throw<OptionsValidationException>();
-        error.Which.Message.Should().Contain("DataAnnotation validation failed for 'FullyQualifiedNamespaceOptions'");
+        var error = actual.Should().Throw<ArgumentNullException>();
+        error.Which.Message.Should().Contain("subscriptionName");
     }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("  ")]
+    public void With_invalid_subscriptionName_options_section_Throws_ArgumentException(string subscriptionName)
+    {
+        //Arrange
+        var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new KeyValuePair<string, string>[]{
+                    new KeyValuePair<string, string>("ServiceBus:ConnectionString", "Endpoint=sb://mock.servicebus.windows.net/;SharedAccessKeyName=mock;SharedAccessKey=MOCK+iWHbYV80ToXyikgi9eGJpQg7Hb7hOj+ejl1Zgjs="),
+                }).Build();
+
+        var services = new ServiceCollection();
+        
+        var provider = services.BuildServiceProvider();
+
+        //Act
+        var actual = () => services.AddEventsSubscriberTopicServiceBus<DummyEvent>(configuration, _serializer, "ServiceBus", subscriptionName); ;
+
+        //Assert
+        var error = actual.Should().Throw<ArgumentException>();
+        error.Which.Message.Should().Contain("subscriptionName");
+    }
+
+    private class DummyEvent : EventBase { }
 }

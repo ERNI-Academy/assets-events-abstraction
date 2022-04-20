@@ -1,5 +1,5 @@
 ﻿using ErniAcademy.Events.Contracts;
-using ErniAcademy.Events.StorageQueues.Extensions;
+using ErniAcademy.Events.ServiceBus.Extensions;
 using ErniAcademy.Serializers.Contracts;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
@@ -7,45 +7,44 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace ErniAcademy.Events.StorageQueues.UnitTests.ServiceCollectionExtensionsTests;
+namespace ErniAcademy.Events.ServiceBus.UnitTests.ServiceCollectionExtensionsTests;
 
-public class AddEventsStorageQueues
+public class AddEventsSubscriberQueueServiceBus
 {
     private readonly ISerializer _serializer;
 
-    public AddEventsStorageQueues()
+    public AddEventsSubscriberQueueServiceBus()
     {
         _serializer = Substitute.For<ISerializer>();
     }
 
     [Fact]
-    public void With_valid_options_section_Should_configure_IEventPublisher_with_StorageQueuesPublisher_impl()
+    public void With_valid_options_section_Should_configure_IEventPublisher_with_ServiceBusPublisher_impl()
     {
         //Arrange
         var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new KeyValuePair<string, string>[]{
-                    new KeyValuePair<string, string>("StorageQueues:ConnectionString", "UseDevelopmentStorage=true"),
+                    new KeyValuePair<string, string>("ServiceBus:ConnectionString", "Endpoint=sb://mock.servicebus.windows.net/;SharedAccessKeyName=mock;SharedAccessKey=MOCK+iWHbYV80ToXyikgi9eGJpQg7Hb7hOj+ejl1Zgjs="),
                 }).Build();
 
         var services = new ServiceCollection();
-        services.AddEventsStorageQueues(configuration, _serializer, "StorageQueues");
+        services.AddEventsSubscriberQueueServiceBus<DummyEvent>(configuration, _serializer, "ServiceBus");
         var provider = services.BuildServiceProvider();
 
         //Act
-        var actual = provider.GetRequiredService<IEventPublisher>();
+        var actual = provider.GetRequiredService<IEventSubscriber<DummyEvent>>();
 
         //Assert
         actual.Should().NotBeNull();
     }
 
     [Theory]
-    [InlineData("StorageQueues:ConnectionString", "")]
-    [InlineData("StorageQueues:ConnectionString", "  ")]
-    [InlineData("StorageQueues:ConnectionString", null)]
-    public async Task With_wrong_connectionstring_options_section_Throws_OptionsValidationException(string key, string value)
+    [InlineData("ServiceBus:ConnectionString", "")]
+    [InlineData("ServiceBus:ConnectionString", "  ")]
+    [InlineData("ServiceBus:ConnectionString", null)]
+    public void With_wrong_connectionstring_options_section_Throws_OptionsValidationException(string key, string value)
     {
         //Arrange
         var configuration = new ConfigurationBuilder()
@@ -54,16 +53,14 @@ public class AddEventsStorageQueues
                 }).Build();
 
         var services = new ServiceCollection();
-        services.AddEventsStorageQueues(configuration, _serializer, "StorageQueues");
+        services.AddEventsSubscriberQueueServiceBus<DummyEvent>(configuration, _serializer, "ServiceBus");
         var provider = services.BuildServiceProvider();
 
-        var publisher = provider.GetRequiredService<IEventPublisher>();
-
         //Act
-        var actual = ()=> publisher.PublishAsync<DummyEvent>(new DummyEvent());
+        var actual = () => provider.GetRequiredService<IEventSubscriber<DummyEvent>>();
 
         //Assert
-        var error = await actual.Should().ThrowAsync<OptionsValidationException>();
+        var error = actual.Should().Throw<OptionsValidationException>();
         error.Which.Message.Should().Contain("DataAnnotation validation failed for 'ConnectionStringOptions'");
     }
 

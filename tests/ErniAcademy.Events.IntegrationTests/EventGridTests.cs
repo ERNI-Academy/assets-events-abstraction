@@ -4,37 +4,83 @@ using System.Text;
 using System.Threading.Tasks;
 using Azure.Messaging.EventGrid;
 using Azure.Storage.Queues;
+using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.EventGrid.Extensions;
+using ErniAcademy.Events.IntegrationTests.Utils;
 using ErniAcademy.Serializers.Contracts;
 using ErniAcademy.Serializers.Json;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Xunit;
 
 namespace ErniAcademy.Events.IntegrationTests;
 
-public class EventGridTests : BaseTests
+public class EventGridTests
 {
     private readonly QueueClient _processor;
     private readonly ISerializer _serializer = new JsonSerializer();
+    private readonly IEventPublisher _publisher;
 
     public EventGridTests()
     {
-        var options = _provider.GetRequiredService<IOptionsMonitor<QueueOptions>>();
+        var services = new ServiceCollection();
+        var configuration = ConfigurationHelper.Get();
+        services.AddSingleton<IConfiguration>(configuration);
+
+        services.AddEventsPublisherEventGrid(configuration, _serializer, sectionKey: "Events:EventGrid");
+        services.AddOptions<QueueOptions>().Bind(configuration.GetSection("Events:EventGrid")).ValidateDataAnnotations();
+
+        var provider = services.BuildServiceProvider();
+
+        var options = provider.GetRequiredService<IOptionsMonitor<QueueOptions>>();
+
+        _publisher = provider.GetRequiredService<IEventPublisher>();
         _processor = new QueueClient(options.CurrentValue.ConnectionString, "testprocessor");
         _processor.ClearMessages();
     }
 
-    protected override IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration)
+    [Fact]
+    public async Task EventGrid_Publish_event_should_be_received_by_a_consumer()
     {
-        services.AddEventsEventGrid(configuration, _serializer, sectionKey: "Events:EventGrid");
+        //Arrange
+        var @event = new DummyEvent
+        {
+            Title = "Integration test event " + Guid.NewGuid()
+        };
 
-        services.AddOptions<QueueOptions>().Bind(configuration.GetSection("Events:EventGrid")).ValidateDataAnnotations();
+        //Act
+        await _publisher.PublishAsync(@event);
 
-        return services;
+        DummyEvent publishedEvent = await WaitForReceive();
+
+        //Assert
+        publishedEvent.Should().BeEquivalentTo(@event);
     }
 
-    protected override async Task<DummyEvent> WaitForReceive()
+    [Fact]
+    public async Task EventGrid_Publish_events_should_be_received_by_a_consumer()
+    {
+        //Arrange
+        var @events = new[]
+        {
+            new DummyEvent
+            {
+                Title = "Integration test event " + Guid.NewGuid()
+            }
+        };
+
+        //Act
+        await _publisher.PublishAsync(@events);
+
+        DummyEvent publishedEvent = await WaitForReceive();
+
+        //Assert
+        publishedEvent.Should().BeEquivalentTo(@events[0]);
+    }
+
+    protected async Task<DummyEvent> WaitForReceive()
     {
         await Task.Delay(TimeSpan.FromSeconds(5));
 

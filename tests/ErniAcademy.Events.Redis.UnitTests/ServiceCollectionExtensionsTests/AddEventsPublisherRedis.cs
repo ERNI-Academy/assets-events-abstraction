@@ -7,16 +7,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace ErniAcademy.Events.Redis.UnitTests.ServiceCollectionExtensionsTests;
 
-public class AddEventsRedis
+public class AddEventsPublisherRedis
 {
     private readonly ISerializer _serializer;
 
-    public AddEventsRedis()
+    public AddEventsPublisherRedis()
     {
         _serializer = Substitute.For<ISerializer>();
     }
@@ -34,7 +33,7 @@ public class AddEventsRedis
                 }).Build();
 
         var services = new ServiceCollection();
-        services.AddEventsRedis(configuration, _serializer, "Redis");
+        services.AddEventsPublisherRedis(configuration, _serializer, "Redis");
         var provider = services.BuildServiceProvider();
 
         //Act

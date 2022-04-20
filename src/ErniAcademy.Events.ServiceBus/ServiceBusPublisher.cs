@@ -9,9 +9,9 @@ namespace ErniAcademy.Events.ServiceBus;
 public class ServiceBusPublisher : IEventPublisher
 {
     private readonly ServiceBusClient _client;
-    private readonly ConcurrentDictionary<string, ServiceBusSender> _senders;
     private readonly IEventNameResolver _eventNameResolver;
     private readonly ISerializer _serializer;
+    private readonly ConcurrentDictionary<string, ServiceBusSender> _senders;
 
     public ServiceBusPublisher(
         IServiceBusClientProvider serviceBusClientProvider, 
