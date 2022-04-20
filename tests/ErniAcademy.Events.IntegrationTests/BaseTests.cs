@@ -1,86 +1,94 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ErniAcademy.Events.Contracts;
+using ErniAcademy.Events.IntegrationTests.Utils;
+using ErniAcademy.Serializers.Contracts;
+using ErniAcademy.Serializers.Json;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace ErniAcademy.Events.IntegrationTests
+namespace ErniAcademy.Events.IntegrationTests;
+
+public abstract class BaseTests
 {
-    public abstract class BaseTests
+    protected IServiceProvider _provider;
+
+    protected IEventPublisher _publisher;
+    protected IEventSubscriber<DummyEvent> _subscriber;
+    protected ISerializer _serializer = new JsonSerializer();
+
+    protected BaseTests()
     {
-        protected IServiceProvider _provider;
+        var services = new ServiceCollection();
 
-        protected IEventPublisher _sut;
+        var configuration = ConfigurationHelper.Get();
 
-        protected BaseTests()
+        services.AddSingleton<IConfiguration>(configuration);
+
+        RegisterSut(services, configuration);
+
+        _provider = services.BuildServiceProvider();
+
+        _publisher = _provider.GetService<IEventPublisher>();
+        _subscriber = _provider.GetRequiredService<IEventSubscriber<DummyEvent>>();
+    }
+
+    protected abstract IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration);
+
+    [Fact]
+    public virtual async Task Publish_event_should_be_received_by_a_consumer()
+    {
+        //Arrange
+        var @event = new DummyEvent
         {
-            var services = new ServiceCollection();
+            Title = "Integration test event " + Guid.NewGuid()
+        };
 
-            var tempConfig = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("tests.settings.Development.json", optional: true)
-                .Build();
+        DummyEvent publishedEvent = null;
 
-            var isDevelopment = tempConfig.GetValue<string>("Environment") == "Development";
+        _subscriber.Subscribe((e) => { publishedEvent = e; return Task.CompletedTask; });
+        await _subscriber.StarProcessingAsync();
 
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Environment.CurrentDirectory)
-                .AddJsonFile(isDevelopment ? "tests.settings.Development.json" : "tests.settings.json", optional: false)
-                .AddEnvironmentVariables()
-                .Build();
+        //Act
+        await _publisher.PublishAsync(@event);
 
-            services.AddSingleton<IConfiguration>(configuration);
+        await Task.Delay(TimeSpan.FromSeconds(5));
 
-            RegisterSut(services, configuration);
+        await _subscriber.StopProcessingAsync();
 
-            _provider = services.BuildServiceProvider();
+        //Assert
+        publishedEvent.Should().BeEquivalentTo(@event);
+    }
 
-            _sut = _provider.GetService<IEventPublisher>();
-        }
-
-        protected abstract IServiceCollection RegisterSut(IServiceCollection services, IConfiguration configuration);
-        protected abstract Task<DummyEvent> WaitForReceive();
-
-        [Fact]
-        public virtual async Task Publish_event_should_be_received_by_a_consumer()
+    [Fact]
+    public virtual async Task Publish_events_should_be_received_by_a_consumer()
+    {
+        //Arrange
+        var @events = new[] 
         {
-            //Arrange
-            var @event = new DummyEvent
+            new DummyEvent
             {
                 Title = "Integration test event " + Guid.NewGuid()
-            };
+            } 
+        };
 
-            //Act
-            await _sut.PublishAsync(@event);
+        List<DummyEvent> publishedEvents = null;
 
-            //Assert
-            var actual = await WaitForReceive();
+        _subscriber.Subscribe((e) => { publishedEvents.Add(e); return Task.CompletedTask; });
+        await _subscriber.StarProcessingAsync();
 
-            actual.Should().BeEquivalentTo(@event);
-        }
+        //Act
+        await _publisher.PublishAsync(@events);
 
-        [Fact]
-        public virtual async Task Publish_events_should_be_received_by_a_consumer()
-        {
-            //Arrange
-            var @events = new[] 
-            {
-                new DummyEvent
-                {
-                    Title = "Integration test event " + Guid.NewGuid()
-                } 
-            };
+        await Task.Delay(TimeSpan.FromSeconds(5));
 
-            //Act
-            await _sut.PublishAsync(@events);
+        await _subscriber.StopProcessingAsync();
 
-            //Assert
-            var actual = await WaitForReceive();
-
-            actual.Should().BeEquivalentTo(@events[0]);
-        }
+        //Assert
+        publishedEvents.Should().BeEquivalentTo(@events);
     }
 }
