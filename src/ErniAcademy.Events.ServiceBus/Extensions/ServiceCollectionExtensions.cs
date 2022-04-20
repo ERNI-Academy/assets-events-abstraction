@@ -109,7 +109,7 @@ public static class ServiceCollectionExtensions
 
         if (string.IsNullOrWhiteSpace(subscriptionName))
         {
-            throw new ArgumentException(nameof(subscriptionName));
+            throw new ArgumentException("Invalid argument", nameof(subscriptionName));
         }
 
         services.AddOptions<ConnectionStringOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
