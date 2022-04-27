@@ -6,11 +6,11 @@
 public interface IEventSubscriber<TEvent>
     where TEvent : class, IEvent, new()
 {
-    void Subscribe(Func<TEvent, Task> handler);
+    public event Func<TEvent, Task> ProcessEventAsync;
 
-    void UnSubscribe(Func<TEvent, Task> handler);
+    public event Func<Tuple<string, Exception>, Task> ProcessErrorAsync;
 
-    Task StarProcessingAsync(CancellationToken cancellationToken = default);
+    Task StartProcessingAsync(CancellationToken cancellationToken = default);
 
     Task StopProcessingAsync(CancellationToken cancellationToken = default);
 }
