@@ -26,7 +26,7 @@ public static class SampleConfiguration
         ///    "ConnectionString": "[put here your ServiceBus connection string]"
         ///}
         services.AddEventsPublisherServiceBus(configuration, serializer, sectionKey: "Events:ServiceBus");
-        services.AddEventsSubscriberTopicServiceBus<MyEvent>(configuration, serializer, sectionKey: "Events:ServiceBus", subscriptionName: "[your topic subscription name]");
+        services.AddEventsSubscriberTopicServiceBus<DummyEvent>(configuration, serializer, sectionKey: "Events:ServiceBus", subscriptionName: "testprocessor"); //change testprocessor with your subscription name
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public static class SampleConfiguration
         ///    "ConnectionString": "[put here your StorageQueues connection string]"
         ///}
         services.AddEventsPublisherStorageQueues(configuration, serializer, sectionKey: "Events:StorageQueues");
-        services.AddEventsSubscriberStorageQueues<MyEvent>(configuration, serializer, sectionKey: "Events:StorageQueues");
+        services.AddEventsSubscriberStorageQueues<DummyEvent>(configuration, serializer, sectionKey: "Events:StorageQueues");
     }
 
     /// <summary>
@@ -62,6 +62,6 @@ public static class SampleConfiguration
         ///    "ConnectionString": "[put here your Redis connection string]"
         ///}
         services.AddEventsPublisherRedis(configuration, serializer, sectionKey: "Events:Redis");
-        services.AddEventsSubscriberRedis<MyEvent>(configuration, serializer, sectionKey: "Events:Redis");
+        services.AddEventsSubscriberRedis<DummyEvent>(configuration, serializer, sectionKey: "Events:Redis");
     }
 }

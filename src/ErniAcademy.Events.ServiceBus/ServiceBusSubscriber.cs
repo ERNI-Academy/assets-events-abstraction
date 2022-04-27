@@ -24,8 +24,6 @@ public class ServiceBusSubscriber<TEvent> : IEventSubscriber<TEvent>
 
     public event Func<TEvent, Task> ProcessEventAsync;
 
-    public event Func<Tuple<string, Exception>, Task> ProcessErrorAsync;
-
     public async Task StartProcessingAsync(CancellationToken cancellationToken = default)
     {
         _processor.ProcessMessageAsync += async args =>
@@ -37,9 +35,9 @@ public class ServiceBusSubscriber<TEvent> : IEventSubscriber<TEvent>
             await args.CompleteMessageAsync(args.Message, cancellationToken);
         };
 
-        _processor.ProcessErrorAsync += async args =>
+        _processor.ProcessErrorAsync += args =>
         {
-            await ProcessErrorAsync?.Invoke(new Tuple<string, Exception>(args.EntityPath, args.Exception));
+            throw new Exception("ProcessErrorAsync", args.Exception);
         };
 
         await _processor.StartProcessingAsync(cancellationToken);

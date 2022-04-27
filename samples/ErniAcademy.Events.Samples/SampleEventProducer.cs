@@ -13,10 +13,12 @@ public class SampleEventProducer
 
     public async Task RunAsync() 
     {
-        var @event = new MyEvent
+        var @event = new DummyEvent
         {
-            MyCustomProperty = "hi"
+            MyCustomProperty = "hi from event"
         };
+
+        Console.WriteLine($"Publishing event: {@event.MyCustomProperty}");
 
         await _eventPublisher.PublishAsync(@event);
     }
