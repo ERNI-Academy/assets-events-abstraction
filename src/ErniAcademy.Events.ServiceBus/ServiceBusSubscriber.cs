@@ -2,7 +2,6 @@
 using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.ServiceBus.ProcessorProvider;
 using ErniAcademy.Serializers.Contracts;
-using System.Collections.Concurrent;
 
 namespace ErniAcademy.Events.ServiceBus;
 
@@ -11,7 +10,6 @@ public class ServiceBusSubscriber<TEvent> : IEventSubscriber<TEvent>
 {
     private readonly ServiceBusProcessor _processor;
     private readonly ISerializer _serializer;
-    private readonly ConcurrentDictionary<string, Func<TEvent, Task>> _handlers;
 
     public ServiceBusSubscriber(
         IServiceBusProcessorProvider serviceBusProcessorProvider, 
@@ -22,29 +20,27 @@ public class ServiceBusSubscriber<TEvent> : IEventSubscriber<TEvent>
 
         _processor = serviceBusProcessorProvider.GetProcessor(eventName);
         _serializer = serializer;
-
-        _handlers = new ConcurrentDictionary<string, Func<TEvent, Task>>();
     }
 
-    public void Subscribe(Func<TEvent, Task> handler) => _handlers.TryAdd(handler.GetType().FullName, handler);
+    public event Func<TEvent, Task> ProcessEventAsync;
 
-    public void UnSubscribe(Func<TEvent, Task> handler) => _handlers.TryRemove(handler.GetType().FullName, out Func<TEvent, Task> removed);
+    public event Func<Tuple<string, Exception>, Task> ProcessErrorAsync;
 
-    public async Task StarProcessingAsync(CancellationToken cancellationToken = default)
+    public async Task StartProcessingAsync(CancellationToken cancellationToken = default)
     {
         _processor.ProcessMessageAsync += async args =>
         {
             var @event = await _serializer.DeserializeFromStreamAsync<TEvent>(args.Message.Body.ToStream(), cancellationToken);
 
-            foreach (var handler in _handlers)
-            {
-                await handler.Value.Invoke(@event);
-            }
+            await ProcessEventAsync.Invoke(@event);
 
             await args.CompleteMessageAsync(args.Message, cancellationToken);
         };
 
-        _processor.ProcessErrorAsync += args => { throw args.Exception; };
+        _processor.ProcessErrorAsync += async args =>
+        {
+            await ProcessErrorAsync?.Invoke(new Tuple<string, Exception>(args.EntityPath, args.Exception));
+        };
 
         await _processor.StartProcessingAsync(cancellationToken);
     }

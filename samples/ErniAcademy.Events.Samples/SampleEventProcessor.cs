@@ -13,9 +13,9 @@ public class SampleEventProcessor
 
     public async Task RunAsync()
     {
-        _subscriber.Subscribe(ProcessEvent);
+        _subscriber.ProcessEventAsync += ProcessEvent;
         
-        await _subscriber.StarProcessingAsync();
+        await _subscriber.StartProcessingAsync();
     }
 
     private Task ProcessEvent(MyEvent arg)

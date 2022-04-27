@@ -6,6 +6,7 @@ using ErniAcademy.Serializers.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ErniAcademy.Events.StorageQueues.Extensions;
@@ -62,6 +63,7 @@ public static class ServiceCollectionExtensions
         where TEvent : class, IEvent, new()
     {
         services.AddOptions<ConnectionStringOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
+        services.AddOptions<QueueSubscriberOptions>().Bind(configuration.GetSection(sectionKey)).ValidateDataAnnotations();
 
         services.TryAddSingleton<IEventNameResolver, EventNameResolver>();
 
@@ -69,8 +71,9 @@ public static class ServiceCollectionExtensions
         {
             var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
             var queueClientProvider = new ConnectionStringProvider(provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(), queueOptions);
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
-            return new StorageQueueSubscriber<TEvent>(queueClientProvider, eventNameResolver, serializer);
+            return new StorageQueueSubscriber<TEvent>(queueClientProvider, eventNameResolver, serializer, loggerFactory, provider.GetRequiredService<IOptionsMonitor<QueueSubscriberOptions>>());
         });
 
         return services;

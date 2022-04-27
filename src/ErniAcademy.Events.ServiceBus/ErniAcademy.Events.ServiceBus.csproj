@@ -9,7 +9,7 @@
 		<Company>Erni</Company>
 		<PackageDescription>Events Azure ServiceBus publisher and subscriber</PackageDescription>
 		<PackageTags>Events Azure ServiceBus Topic Queue</PackageTags>
-		<VersionPrefix>1.0.0</VersionPrefix>
+		<VersionPrefix>1.0.1</VersionPrefix>
 	</PropertyGroup>
 
 	<ItemGroup>
