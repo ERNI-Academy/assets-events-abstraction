@@ -48,6 +48,7 @@ git clone --recurse-submodules https://github.com/ERNI-Academy/assets-events-abs
 > `Important Note`  
 > All implementations heavly depends on Microsoft Options Pattern for configurations. See https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-6.0
 > So it is expected a proper configuration in order to work take a look at the samples to see how to configure each publisher/subscriber
+> All implementatins also depends on Microsoft logging. See https://docs.microsoft.com/en-us/dotnet/core/extensions/logging?tabs=command-line
 
 
 2. Publish Basic use
