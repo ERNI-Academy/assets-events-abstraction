@@ -35,7 +35,7 @@ jobs:
       
       - uses: actions/checkout@v3
       - id: sonarcloud
-        uses: ERNI-Academy/assets-github-workflows@v2
+        uses: ERNI-Academy/assets-github-workflows@v3
         with:
             sonar_project_key: 'ERNI-Academy_assets-events-abstraction'
             sonar_token: ${{ secrets.SONAR_TOKEN }}
