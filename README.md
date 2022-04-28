@@ -123,7 +123,7 @@ IEventPublisher subscriber = new ErniAcademy.Events.ServiceBus.ServiceBusSubscri
 IEventPublisher subscriber = new ErniAcademy.Events.StorageQueues.StorageQueueSubscriber();//args ommited for simplicity
 
 //first subscribe to an @event by passing a handler to subscribe method
-subscriber.Subscribe<MyEvent>(MyProcessor);
+subscriber.ProcessEventAsync += MyProcessor;
 
 private Task MyProcessor(MyEvent @event)
 {
@@ -166,7 +166,7 @@ class MyService
   public async Task SomeMethod()
   {
       //first subscribe to an @event by passing a handler to subscribe method
-      _subscriber.Subscribe<MyEvent>(MyProcessor);
+      _subscriber.ProcessEventAsync += MyProcessor;
 
       //start processing events 
       await _subscriber.StarProcessingAsync();

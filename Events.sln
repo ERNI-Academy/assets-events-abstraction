@@ -35,6 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Events.Integrat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{63180E75-1A65-4BD3-9A84-8575591599BD}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\codeql-analysis.yml = .github\workflows\codeql-analysis.yml
 		.github\workflows\nugetpush.yml = .github\workflows\nugetpush.yml
 		.github\workflows\sonarcloud.yml = .github\workflows\sonarcloud.yml
 	EndProjectSection
@@ -57,7 +58,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Events.Redis.Un
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".samples", ".samples", "{4A389165-43F2-4D80-BA5D-6E09EEC27ABD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErniAcademy.Events.Samples", "samples\ErniAcademy.Events.Samples\ErniAcademy.Events.Samples.csproj", "{AE143731-1888-45D3-B43D-7BCE4FF7FD72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ErniAcademy.Events.Samples", "samples\ErniAcademy.Events.Samples\ErniAcademy.Events.Samples.csproj", "{AE143731-1888-45D3-B43D-7BCE4FF7FD72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
