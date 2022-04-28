@@ -19,11 +19,10 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
     private readonly ILogger _logger;
 
     private Func<TEvent, Task> _processEventAsync;
-    private Task ActiveReceiveTask { get; set; }
+    private Task _activeReceiveTask;
     private readonly SemaphoreSlim _processingStartStopSemaphore = new(1, 1);
-    private CancellationTokenSource RunningTaskTokenSource { get; set; }
-    private CancellationTokenSource _handlerCts = new();
-    private readonly string _identifier;
+    private CancellationTokenSource _runningTaskTokenSource;
+    private readonly CancellationTokenSource _handlerCts = new();
     private List<(Task Task, CancellationTokenSource Cts)> _taskTuples = new();
 
     public StorageQueueSubscriber(
@@ -43,7 +42,6 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
         _serializer = serializer;
         _options = options;
         _logger = loggerFactory.CreateLogger(nameof(StorageQueueSubscriber<TEvent>));
-        _identifier = $"{eventName}_{Guid.NewGuid()}";
     }
 
     public event Func<TEvent, Task> ProcessEventAsync
@@ -82,19 +80,19 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
             await _processingStartStopSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
             releaseGuard = true;
 
-            if (ActiveReceiveTask == null)
+            if (_activeReceiveTask == null)
             {
-                _logger.LogInformation("StartProcessingAsync '{_identifier}'. Starts", _identifier);
+                _logger.LogInformation("StartProcessingAsync starts");
 
-                if (_processEventAsync == null) throw new InvalidOperationException("ProcessEventAsync mus be assigned");
+                if (_processEventAsync == null) throw new InvalidOperationException("ProcessEventAsync must be assigned");
 
                 cancellationToken.ThrowIfCancellationRequested<TaskCanceledException>();
 
-                RunningTaskTokenSource = new CancellationTokenSource();
+                _runningTaskTokenSource = new CancellationTokenSource();
 
-                ActiveReceiveTask = ReceiveEventAsync(RunningTaskTokenSource.Token);
+                _activeReceiveTask = ReceiveEventAsync(_runningTaskTokenSource.Token);
 
-                _logger.LogInformation("StartProcessingAsync '{_identifier}'. Complete", _identifier);
+                _logger.LogInformation("StartProcessingAsync complete");
             }
             else
             {
@@ -118,9 +116,9 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
             await _processingStartStopSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
             releaseGuard = true;
 
-            if (ActiveReceiveTask != null)
+            if (_activeReceiveTask != null)
             {
-                _logger.LogInformation("StopProcessingAsync '{_identifier}'. Starts", _identifier);
+                _logger.LogInformation("StopProcessingAsync starts");
 
                 cancellationToken.ThrowIfCancellationRequested<TaskCanceledException>();
 
@@ -128,21 +126,21 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
                 // log these as warnings as we don't want to forego stopping due to these exceptions.
                 try
                 {
-                    RunningTaskTokenSource.Cancel();
+                    _runningTaskTokenSource.Cancel();
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError($"Processor '{_identifier}'. Stoping cancelling", exception);
+                    _logger.LogError(exception, $"Processor stoping cancelling");
                 }
 
-                RunningTaskTokenSource.Dispose();
-                RunningTaskTokenSource = null;
+                _runningTaskTokenSource.Dispose();
+                _runningTaskTokenSource = null;
 
                 // Now that a cancellation request has been issued, wait for the running task to finish.  In case something
                 // unexpected happened and it stopped working midway, this is the moment we expect to catch an exception.
                 try
                 {
-                    await ActiveReceiveTask.ConfigureAwait(false);
+                    await _activeReceiveTask.ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 {
@@ -152,14 +150,14 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
                 {
                     // If an unexpected exception occurred while awaiting the receive task, we still want to dispose and set to null
                     // as the task is complete and there is no use in awaiting it again if StopProcessingAsync is called again.
-                    ActiveReceiveTask.Dispose();
-                    ActiveReceiveTask = null;
+                    _activeReceiveTask.Dispose();
+                    _activeReceiveTask = null;
                 }
             }
         }
         catch (Exception exception)
         {
-            _logger.LogError($"Processor '{_identifier}'. Stoping cancel", exception);
+            _logger.LogError(exception, $"Processor stoping cancel");
         }
         finally
         {
@@ -169,7 +167,7 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
             }
         }
 
-        _logger.LogInformation("StopProcessingAsync '{_identifier}'. Complete", _identifier);
+        _logger.LogInformation("StopProcessingAsync complete");
     }
 
     protected async Task ReceiveEventAsync(CancellationToken cancellationToken)
@@ -201,23 +199,7 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
                     _taskTuples.Add((ProcessQueueMessageAsync(message, linkedCts), linkedCts));
                 }
 
-                if (_taskTuples.Count > _options.CurrentValue.MaxConcurrentCalls)
-                {
-                    List<(Task Task, CancellationTokenSource Cts)> remaining = new();
-                    foreach (var tuple in _taskTuples)
-                    {
-                        if (tuple.Task.IsCompleted)
-                        {
-                            tuple.Cts.Dispose();
-                        }
-                        else
-                        {
-                            remaining.Add(tuple);
-                        }
-                    }
-
-                    _taskTuples = remaining;
-                }
+                CheckConcurrentTasks();
             }
         }
         finally
@@ -243,19 +225,40 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
     private async Task ProcessQueueMessageAsync(QueueMessage message, CancellationTokenSource cancellationToken)
     {
         var @event = await _serializer.DeserializeFromStreamAsync<TEvent>(message.Body.ToStream(), cancellationToken.Token).ConfigureAwait(false);
-        _logger.LogInformation("ReceiveEventAsync '{_identifier}'. Message receive '{MessageId}' '{EventId}'", _identifier, message.MessageId, @event.EventId);
+        _logger.LogInformation("ReceiveEventAsync. Message receive MessageId:'{MessageId}' EventId:'{EventId}'", message.MessageId, @event.EventId);
         await _processEventAsync.Invoke(@event).ConfigureAwait(false);
         await _queueClientLazy.Value.DeleteMessageAsync(message.MessageId, message.PopReceipt, cancellationToken.Token).ConfigureAwait(false);
     }
 
+    private void CheckConcurrentTasks()
+    {
+        if (_taskTuples.Count > _options.CurrentValue.MaxConcurrentCalls)
+        {
+            List<(Task Task, CancellationTokenSource Cts)> remaining = new();
+            foreach (var tuple in _taskTuples)
+            {
+                if (tuple.Task.IsCompleted)
+                {
+                    tuple.Cts.Dispose();
+                }
+                else
+                {
+                    remaining.Add(tuple);
+                }
+            }
+
+            _taskTuples = remaining;
+        }
+    }
+
     internal void EnsureNotRunningAndInvoke(Action action)
     {
-        if (ActiveReceiveTask == null)
+        if (_activeReceiveTask == null)
         {
             try
             {
                 _processingStartStopSemaphore.Wait();
-                if (ActiveReceiveTask == null)
+                if (_activeReceiveTask == null)
                 {
                     action?.Invoke();
                 }

@@ -2,6 +2,7 @@
 using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.ServiceBus.ProcessorProvider;
 using ErniAcademy.Serializers.Contracts;
+using Microsoft.Extensions.Logging;
 
 namespace ErniAcademy.Events.ServiceBus;
 
@@ -10,16 +11,19 @@ public class ServiceBusSubscriber<TEvent> : IEventSubscriber<TEvent>
 {
     private readonly ServiceBusProcessor _processor;
     private readonly ISerializer _serializer;
+    private readonly ILogger _logger;
 
     public ServiceBusSubscriber(
-        IServiceBusProcessorProvider serviceBusProcessorProvider, 
+        IServiceBusProcessorProvider serviceBusProcessorProvider,
         IEventNameResolver eventNameResolver,
-        ISerializer serializer)
+        ISerializer serializer,
+        ILoggerFactory loggerFactory)
     {
         var eventName = eventNameResolver.Resolve<TEvent>();
 
         _processor = serviceBusProcessorProvider.GetProcessor(eventName);
         _serializer = serializer;
+        _logger = loggerFactory.CreateLogger(nameof(ServiceBusSubscriber<TEvent>));
     }
 
     public event Func<TEvent, Task> ProcessEventAsync;
@@ -37,7 +41,8 @@ public class ServiceBusSubscriber<TEvent> : IEventSubscriber<TEvent>
 
         _processor.ProcessErrorAsync += args =>
         {
-            throw new Exception("ProcessErrorAsync", args.Exception);
+            _logger.LogError(args.Exception, "ProcessErrorAsync {ErrorSource} {EntityPath}", args.ErrorSource, args.EntityPath);
+            return Task.CompletedTask;
         };
 
         await _processor.StartProcessingAsync(cancellationToken);
