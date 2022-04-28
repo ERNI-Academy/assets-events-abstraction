@@ -19,11 +19,11 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
     private readonly ILogger _logger;
 
     private Func<TEvent, Task> _processEventAsync;
-    private Task _activeReceiveTask;
     private readonly SemaphoreSlim _processingStartStopSemaphore = new(1, 1);
     private CancellationTokenSource _runningTaskTokenSource;
     private readonly CancellationTokenSource _handlerCts = new();
-    private List<(Task Task, CancellationTokenSource Cts)> _taskTuples = new();
+    internal Task _activeReceiveTask;
+    internal List<(Task Task, CancellationTokenSource Cts)> _taskTuples = new();
 
     public StorageQueueSubscriber(
         IQueueClientProvider queueClientProvider,
@@ -64,7 +64,7 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
 
             if (_processEventAsync != value)
             {
-                throw new ArgumentException("Handler has not been assigned");
+                throw new NotSupportedException("Handler has not been assigned");
             }
 
             EnsureNotRunningAndInvoke(() => _processEventAsync = default);
@@ -170,7 +170,7 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
         _logger.LogInformation("StopProcessingAsync complete");
     }
 
-    protected async Task ReceiveEventAsync(CancellationToken cancellationToken)
+    protected virtual async Task ReceiveEventAsync(CancellationToken cancellationToken)
     {
         CancellationTokenSource linkedHandlerTcs = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _handlerCts.Token);
 
@@ -222,7 +222,7 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
         }
     }
 
-    private async Task ProcessQueueMessageAsync(QueueMessage message, CancellationTokenSource cancellationToken)
+    protected virtual async Task ProcessQueueMessageAsync(QueueMessage message, CancellationTokenSource cancellationToken)
     {
         var @event = await _serializer.DeserializeFromStreamAsync<TEvent>(message.Body.ToStream(), cancellationToken.Token).ConfigureAwait(false);
         _logger.LogInformation("ReceiveEventAsync. Message receive MessageId:'{MessageId}' EventId:'{EventId}'", message.MessageId, @event.EventId);
@@ -230,7 +230,7 @@ public class StorageQueueSubscriber<TEvent> : IEventSubscriber<TEvent>
         await _queueClientLazy.Value.DeleteMessageAsync(message.MessageId, message.PopReceipt, cancellationToken.Token).ConfigureAwait(false);
     }
 
-    private void CheckConcurrentTasks()
+    internal void CheckConcurrentTasks()
     {
         if (_taskTuples.Count > _options.CurrentValue.MaxConcurrentCalls)
         {

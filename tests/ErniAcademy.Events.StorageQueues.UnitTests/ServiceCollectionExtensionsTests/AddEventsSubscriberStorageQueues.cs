@@ -4,6 +4,7 @@ using ErniAcademy.Serializers.Contracts;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Collections.Generic;
 using Xunit;
@@ -29,6 +30,7 @@ public class AddEventsSubscriberStorageQueues
                 }).Build();
 
         var services = new ServiceCollection();
+        services.AddLogging(builder => builder.AddDebug());
         services.AddEventsSubscriberStorageQueues<DummyEvent>(configuration, _serializer, "StorageQueues");
         var provider = services.BuildServiceProvider();
 

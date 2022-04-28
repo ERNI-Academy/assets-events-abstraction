@@ -4,6 +4,7 @@ using ErniAcademy.Serializers.Contracts;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ public class AddEventsSubscriberQueueServiceBus
                 }).Build();
 
         var services = new ServiceCollection();
+        services.AddLogging(builder => builder.AddDebug());
         services.AddEventsSubscriberQueueServiceBus<DummyEvent>(configuration, _serializer, "ServiceBus");
         var provider = services.BuildServiceProvider();
 
@@ -53,6 +55,7 @@ public class AddEventsSubscriberQueueServiceBus
                 }).Build();
 
         var services = new ServiceCollection();
+        services.AddLogging(builder => builder.AddDebug());
         services.AddEventsSubscriberQueueServiceBus<DummyEvent>(configuration, _serializer, "ServiceBus");
         var provider = services.BuildServiceProvider();
 
