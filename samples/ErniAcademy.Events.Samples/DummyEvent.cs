@@ -2,23 +2,23 @@
 
 namespace ErniAcademy.Events.Samples;
 
-public class MyEvent : EventBase
+public class DummyEvent : EventBase
 {
-    public MyEvent()
+    public DummyEvent()
     {
     }
 
-    public MyEvent(Guid correlationId) 
+    public DummyEvent(Guid correlationId) 
         : base(correlationId)
     {
     }
 
-    public MyEvent(string eventType) 
+    public DummyEvent(string eventType) 
         : base(eventType)
     {
     }
 
-    public MyEvent(Guid eventId, Guid correlationId, string eventType, DateTimeOffset createdAt) 
+    public DummyEvent(Guid eventId, Guid correlationId, string eventType, DateTimeOffset createdAt) 
         : base(eventId, correlationId, eventType, createdAt)
     {
     }

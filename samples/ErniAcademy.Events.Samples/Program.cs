@@ -1,6 +1,7 @@
 ﻿using ErniAcademy.Events.Samples;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 IServiceCollection services = new ServiceCollection();
 
@@ -9,6 +10,8 @@ var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false)
     .AddEnvironmentVariables()
     .Build();
+
+services.AddLogging(builder => builder.AddConsole().AddDebug());
 
 services.AddSingleton<SampleEventProducer>();
 services.AddSingleton<SampleEventProcessor>();
@@ -32,5 +35,7 @@ var provider = services.BuildServiceProvider();
 var producer = provider.GetRequiredService<SampleEventProducer>();
 var processor = provider.GetRequiredService<SampleEventProcessor>();
 
-await producer.RunAsync();
 await processor.RunAsync();
+await producer.RunAsync();
+
+Console.Read();

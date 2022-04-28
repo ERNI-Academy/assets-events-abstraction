@@ -2,7 +2,7 @@
 using ErniAcademy.Events.Contracts;
 using ErniAcademy.Events.ServiceBus.ProcessorProvider;
 using ErniAcademy.Serializers.Contracts;
-using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 
 namespace ErniAcademy.Events.ServiceBus;
 
@@ -11,40 +11,39 @@ public class ServiceBusSubscriber<TEvent> : IEventSubscriber<TEvent>
 {
     private readonly ServiceBusProcessor _processor;
     private readonly ISerializer _serializer;
-    private readonly ConcurrentDictionary<string, Func<TEvent, Task>> _handlers;
+    private readonly ILogger _logger;
 
     public ServiceBusSubscriber(
-        IServiceBusProcessorProvider serviceBusProcessorProvider, 
+        IServiceBusProcessorProvider serviceBusProcessorProvider,
         IEventNameResolver eventNameResolver,
-        ISerializer serializer)
+        ISerializer serializer,
+        ILoggerFactory loggerFactory)
     {
         var eventName = eventNameResolver.Resolve<TEvent>();
 
         _processor = serviceBusProcessorProvider.GetProcessor(eventName);
         _serializer = serializer;
-
-        _handlers = new ConcurrentDictionary<string, Func<TEvent, Task>>();
+        _logger = loggerFactory.CreateLogger(nameof(ServiceBusSubscriber<TEvent>));
     }
 
-    public void Subscribe(Func<TEvent, Task> handler) => _handlers.TryAdd(handler.GetType().FullName, handler);
+    public event Func<TEvent, Task> ProcessEventAsync;
 
-    public void UnSubscribe(Func<TEvent, Task> handler) => _handlers.TryRemove(handler.GetType().FullName, out Func<TEvent, Task> removed);
-
-    public async Task StarProcessingAsync(CancellationToken cancellationToken = default)
+    public async Task StartProcessingAsync(CancellationToken cancellationToken = default)
     {
         _processor.ProcessMessageAsync += async args =>
         {
             var @event = await _serializer.DeserializeFromStreamAsync<TEvent>(args.Message.Body.ToStream(), cancellationToken);
 
-            foreach (var handler in _handlers)
-            {
-                await handler.Value.Invoke(@event);
-            }
+            await ProcessEventAsync.Invoke(@event);
 
             await args.CompleteMessageAsync(args.Message, cancellationToken);
         };
 
-        _processor.ProcessErrorAsync += args => { throw args.Exception; };
+        _processor.ProcessErrorAsync += args =>
+        {
+            _logger.LogError(args.Exception, "ProcessErrorAsync {ErrorSource} {EntityPath}", args.ErrorSource, args.EntityPath);
+            return Task.CompletedTask;
+        };
 
         await _processor.StartProcessingAsync(cancellationToken);
     }

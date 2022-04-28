@@ -7,6 +7,7 @@ using ErniAcademy.Serializers.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ErniAcademy.Events.ServiceBus.Extensions;
@@ -73,8 +74,9 @@ public static class ServiceCollectionExtensions
             var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
             var serviceBusClientProvider = new ConnectionStringProvider(provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(), busOptions);
             var serviceBusProcessorProvider = new QueueProvider(serviceBusClientProvider, busProcessorOptions);
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
-            return new ServiceBusSubscriber<TEvent>(serviceBusProcessorProvider, eventNameResolver, serializer);
+            return new ServiceBusSubscriber<TEvent>(serviceBusProcessorProvider, eventNameResolver, serializer, loggerFactory);
         });
 
         return services;
@@ -121,8 +123,9 @@ public static class ServiceCollectionExtensions
             var eventNameResolver = provider.GetRequiredService<IEventNameResolver>();
             var serviceBusClientProvider = new ConnectionStringProvider(provider.GetRequiredService<IOptionsMonitor<ConnectionStringOptions>>(), busOptions);
             var serviceBusProcessorProvider = new TopicProvider(serviceBusClientProvider, subscriptionName, busProcessorOptions);
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
-            return new ServiceBusSubscriber<TEvent>(serviceBusProcessorProvider, eventNameResolver, serializer);
+            return new ServiceBusSubscriber<TEvent>(serviceBusProcessorProvider, eventNameResolver, serializer, loggerFactory);
         });
 
         return services;
