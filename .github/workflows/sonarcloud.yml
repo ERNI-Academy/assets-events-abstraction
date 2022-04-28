@@ -50,7 +50,7 @@ jobs:
         shell: powershell
         run: |
             dotnet sonarscanner begin /k:"ERNI-Academy_assets-events-abstraction" /o:"erni-academy" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
-            dotnet build ./*.sln --configuration Release
+            dotnet build **/*.sln --configuration Release
             dotnet test "*.UnitTests.csproj" --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
             dotnet test "*.IntegrationTests.csproj" --no-restore --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
             dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
