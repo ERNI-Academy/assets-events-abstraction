@@ -34,7 +34,7 @@ jobs:
             Events.StorageQueues.ConnectionString: ${{ secrets.EVENTS_STORAGESQUEUES_CONNECTIONSTRING }}
       
       - id: Sonarcloud
-        uses: ERNI-Academy/assets-github-workflows/blob/v1/actions/sonarcloud@v1 
+        uses: ERNI-Academy/assets-github-workflows/actions/sonarcloud@v1 
         with:
             sonar_project_key: 'ERNI-Academy_assets-events-abstraction'
             sonar_token: ${{ secrets.SONAR_TOKEN }}
