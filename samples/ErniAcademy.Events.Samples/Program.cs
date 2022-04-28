@@ -7,7 +7,7 @@ IServiceCollection services = new ServiceCollection();
 
 var configuration = new ConfigurationBuilder()
     .SetBasePath(Environment.CurrentDirectory)
-    .AddJsonFile("appsettings.development.json", optional: false)
+    .AddJsonFile("appsettings.json", optional: false)
     .AddEnvironmentVariables()
     .Build();
 
