@@ -33,7 +33,7 @@ jobs:
             Events.Redis.ConnectionString: ${{ secrets.EVENTS_REDIS_CONNECTIONSTRING }}
             Events.StorageQueues.ConnectionString: ${{ secrets.EVENTS_STORAGESQUEUES_CONNECTIONSTRING }}
       
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - id: sonarcloud
         uses: ERNI-Academy/assets-github-workflows@v3
         with:
