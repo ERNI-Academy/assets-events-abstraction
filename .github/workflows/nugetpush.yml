@@ -15,9 +15,7 @@ jobs:
           submodules: 'true'
           fetch-depth: 0
 
-    - name: Pack
-      run: dotnet pack --configuration Release -o nuget
-      shell: bash
-    - name: Push
-      run: dotnet nuget push "nuget/*.nupkg" --source "https://nuget.pkg.github.com/ERNI-Academy/index.json" --api-key ${{ secrets.PACKAGESTOKEN }} --skip-duplicate
-      shell: bash
+    - id: nuget-push
+      uses: ERNI-Academy/assets-github-actions-dotnet-nugetpush@v1
+      with:
+         pakages_token: '[your package token]'
