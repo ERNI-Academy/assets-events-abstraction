@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - main
-
+  workflow_call:
+    secrets:
+        PACKAGESTOKEN:
+          required: true
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,4 +21,4 @@ jobs:
     - id: nuget-push
       uses: ERNI-Academy/assets-github-actions-dotnet-nugetpush@v1
       with:
-         pakages_token: '[your package token]'
+         pakages_token: ${{ secrets.PACKAGESTOKEN }}
